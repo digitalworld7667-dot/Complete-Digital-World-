@@ -1,32 +1,33 @@
-# Complete Digital World — Managed single package
+# Complete Digital World — Supabase Auth integration build
 
-## Ek hi canonical project
-- `index.html` — latest full school-management UI (same original interface, consolidated as the only frontend entry point).
-- `supabase-config.js` — one canonical Supabase browser config; `config/supabase-config.js` is an identical compatibility copy.
-- `supabase/schema.sql` — safe, additive fee-table migration aligned to the audited live schema.
-- `.github/workflows/pages.yml` — GitHub Pages deployment.
+## Is build mein kya update hua
+- Existing responsive school-management UI preserve kiya gaya hai.
+- `supabase-config.js` mein existing Supabase project URL aur browser-safe Publishable Key use hoti hai.
+- Supabase JS v2 CDN SDK load hota hai.
+- Login ab Supabase Auth `signInWithPassword` se verify hota hai; localStorage ke demo email/password se login nahi hota.
+- Login ke baad `profiles` table mein `auth.uid()` matching profile, role aur school mapping verify hoti hai.
+- Student, teacher aur parent profile ke liye linked record lookup hota hai.
+- Refresh par valid Supabase session restore hota hai; logout Supabase Auth se hota hai.
+- Real user login ke waqt browser ke seeded demo records clear kiye jaate hain, taaki demo students/fees/attendance real account ko na dikhayein.
+- Public self-registration band hai. Browser se role choose karke privileged account banana secure nahi hota.
 
-## Important status (please read)
-The existing `index.html` is still a **frontend demo**: its login and module records use browser `localStorage`. Adding a Supabase URL/key file does not connect authentication or data automatically. I have kept the existing UI intact rather than replacing it with a broken partial auth rewrite.
+## Bahut zaroori limitation
+**Yeh Auth integration milestone hai, poora database-module integration nahi.** Dashboard ka existing Attendance, Marks, Fees, Homework, Notices, Timetable, Transport, Support aur admin-management UI abhi Supabase tables ke saath end-to-end CRUD sync nahi karta. Login ke baad dashboard mein real data blank ho sakta hai; is build ko real school operations ya production student records ke liye abhi use na karein. Agle phase mein har module ko exact live schema + RLS ke saath wire aur role-wise test karna hoga.
 
-The previous starter SQL had tables/columns that do not match your audited live database. It is intentionally not included. This package's SQL only adds `fee_records` and `fee_payments` plus indexes and conservative school-admin/super-admin RLS policies. It does not delete or alter your existing tables or records. Parent/student fee access is intentionally not opened until the live parent-child/profile links are verified.
+## Existing Supabase account ki requirements
+1. Supabase Authentication → Users mein user account hona chahiye.
+2. `public.profiles.id` us Auth user's UID ke exactly equal hona chahiye.
+3. `profiles.role` supported values mein ho: `super_admin`, `school_admin`, `teacher`, `parent`, `student`, `bus_driver` (legacy `driver` bhi mapped hai).
+4. School users ke liye `profiles.school_id` valid school row ko point kare.
+5. Student/teacher/parent dashboards ke liye respective table mein `profile_id = auth.uid()` linked row honi chahiye.
 
-`notification_queue` stores pending jobs; it does not send SMS/WhatsApp by itself. A Supabase Edge Function plus SMS/WhatsApp provider is still required. QR/fingerprint and live GPS also need device/provider integration.
-
-## Supabase setup
-1. Take a database backup.
-2. Open Supabase → SQL Editor. Review `supabase/schema.sql`, then run it. Do not run the old starter schema from earlier packages.
-3. Confirm the two fee tables and RLS policies were created.
-4. Never place a `service_role`/secret key in HTML, JS, GitHub, or browser storage. Use only the publishable key in frontend code.
+## Security
+- Frontend mein sirf publishable key hai. `service_role` / secret key kabhi browser, GitHub ya HTML mein mat daalein.
+- Actual data authorization Supabase RLS policies se hota hai; UI role checks security boundary nahi hain.
+- Account creation/invitations aur password reset ke liye trusted server-side Edge Function/admin workflow abhi alag se banana hai.
 
 ## GitHub Pages
-1. Extract this ZIP. Upload the **contents** of this folder to the root of your repository.
-2. Confirm `index.html`, `supabase-config.js`, `supabase/`, and `.github/workflows/` are in the repository root.
-3. GitHub → Settings → Pages → Build and deployment → GitHub Actions.
-4. Open Actions and wait for the deployment workflow to succeed.
+Repository root mein `index.html`, `auth-integration.js`, `supabase-config.js`, `.github/workflows/` aur baaki files upload karein. GitHub Pages ko GitHub Actions workflow se deploy karein.
 
-## What is not falsely marked complete
-- Supabase Auth + all frontend reads/writes: not yet wired.
-- Fees UI sync: not yet wired to the new tables.
-- SMS/WhatsApp delivery worker: not configured.
-- Parent/student fee read policies: pending verified relationship mapping.
+## SQL note
+Is package ka purana `supabase/schema.sql` historical starter migration hai aur current audited live database ke liye authoritative schema nahi hai. Use abhi run na karein. Current live schema/RLS audit ke mutabik hi future migrations banengi.
