@@ -74,3 +74,79 @@
     padding: 18px;
   }
 }
+
+
+/* Fixed desktop admin workspace: keep the dashboard frame stationary and
+   move long content inside the panel/sidebar instead of scrolling the page. */
+@media (min-width: 761px) {
+  html:has(body #appView:not([hidden])) {
+    height: 100%;
+    overflow: hidden;
+  }
+  body:has(#appView:not([hidden])) {
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  body:has(#appView:not([hidden])) > .top {
+    flex: 0 0 76px;
+    position: relative;
+    z-index: 5;
+  }
+  body:has(#appView:not([hidden])) > main.wrap {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: calc(100vh - 76px);
+    height: calc(100dvh - 76px);
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 14px 28px 16px;
+    overflow: hidden;
+  }
+  #appView:not([hidden]) {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  #appView:not([hidden]) .welcome {
+    flex: 0 0 auto;
+    margin: 0 0 14px;
+  }
+  #appView:not([hidden]) .welcome h1 {
+    margin: 0;
+  }
+  #appView:not([hidden]) .dashboard-shell {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: auto;
+    margin: 0;
+    align-items: stretch;
+    grid-template-columns: 245px minmax(0, 1fr);
+    gap: 20px;
+    overflow: hidden;
+  }
+  #appView:not([hidden]) .sidebar {
+    position: relative;
+    top: auto;
+    height: 100%;
+    max-height: none;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  #appView:not([hidden]) #panel {
+    height: 100%;
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+  }
+  body:has(#appView:not([hidden])) > footer {
+    display: none;
+  }
+}
