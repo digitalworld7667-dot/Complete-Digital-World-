@@ -3,6 +3,12 @@
  const cfg=window.CDW_SUPABASE_CONFIG||{}; const $=s=>document.querySelector(s); const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const client=window.supabase?.createClient(cfg.url,cfg.publishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
  let user=null,profile=null,studentLink=null,active='Overview';
+ const captchaWidgets=new Map();
+ function renderCaptcha(name){const el=document.querySelector(`[data-captcha="${name}"]`);if(!el||!window.hcaptcha||captchaWidgets.has(name))return;try{captchaWidgets.set(name,window.hcaptcha.render(el,{sitekey:el.dataset.sitekey}))}catch(e){console.error('CAPTCHA render failed',name,e)}}
+ function captchaTokenForLogin(){return captchaToken('login')}
+ function captchaToken(name){const id=captchaWidgets.get(name);return id===undefined?'':window.hcaptcha?.getResponse(id)||''}
+ function resetCaptcha(name){const id=captchaWidgets.get(name);if(id!==undefined)window.hcaptcha?.reset(id)}
+ document.addEventListener('hcaptcha-ready',()=>{renderCaptcha('login')});
  const roleLabel={super_admin:'Super Admin',school_admin:'School Admin',teacher:'Teacher',parent:'Parent',student:'Student',bus_driver:'Bus Driver'};
  const tableMap={Schools:['schools','id,name,logo_url,created_at'],Students:['students','id,student_name,class_name,roll_number,school_id,profile_id'],Teachers:['teachers','id,teacher_name,subject,school_id,profile_id'],Parents:['parents','id,parent_name,student_id,school_id,profile_id'],Attendance:['attendance','id,student_id,school_id,attendance_date,status,marked_by,created_at'],Marks:['marks','id,student_id,school_id,subject,exam_name,marks_obtained,maximum_marks,created_at'],Fees:['fees','id,student_id,school_id,fee_type,period,amount,due_date,status,notes,created_at'],Notices:['notices','id,school_id,title,message,audience,class_name,publish_at,expires_at,created_at'],Homework:['homework','id,school_id,class_name,section,subject,title,description,due_date,assigned_by,created_at'],Buses:['buses','id,school_id,bus_number,driver_profile_id,created_at'], 'Bus Logs':['bus_logs','id,school_id,student_id,bus_id,event_type,event_time,recorded_by'], 'Teacher Attendance':['teacher_attendance','id,teacher_id,school_id,attendance_date,check_in_time,method,status']};
  const roleTabs={super_admin:['Overview','Schools','Students','Teachers','Parents','Attendance','Marks','Fees','Notices','Homework','Buses','Bus Logs','Support Tickets','Accounts'],school_admin:['Overview','Students','Teachers','Parents','Attendance','Marks','Fees','Notices','Homework','Buses','Bus Logs','Teacher Attendance','Support Tickets','Accounts'],teacher:['Overview','Students','Attendance','Marks','Notices','Homework','Teacher Attendance'],parent:['Overview','Child','Attendance','Marks','Fees','Notices','Homework','Bus Logs'],student:['Overview','My Attendance','My Marks','Fees','Notices','Homework'],bus_driver:['Overview','My Bus','Bus Logs']};
@@ -60,11 +66,30 @@
  const f=$('#provisionForm');f.onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(f));const {data,error}=await client.functions.invoke('provision-user',{body:d});if(error||data?.error){appMessage(data?.error||error.message,'error');return}appMessage('Account created. User ID: '+data.user_id,'success');renderAccounts(panel)};}
 
 
- $('#loginForm').onsubmit=async e=>{e.preventDefault();hideMessage();const b=e.submitter;b.disabled=true;try{if(!window.hcaptcha)throw new Error('CAPTCHA load nahi hua. Page refresh karke dobara try karein.');const captchaToken=window.hcaptcha.getResponse();if(!captchaToken)throw new Error('Please complete the CAPTCHA verification.');const fd=new FormData(e.currentTarget);const {data,error}=await client.functions.invoke('secure-login',{body:{email:String(fd.get('email')).trim().toLowerCase(),password:fd.get('password'),captchaToken}});if(error)throw new Error(error.message);if(data?.error)throw new Error(data.error);if(!data?.session?.access_token)throw new Error('Secure login function returned no session.');const {data:s,error:se}=await client.auth.setSession(data.session);if(se)throw se;await loadIdentity(s.user||data.user)}catch(err){message(err.message||'Login failed','error')}finally{if(window.hcaptcha)window.hcaptcha.reset();b.disabled=false}};
- $('#resetForm').onsubmit=async e=>{e.preventDefault();try{const email=new FormData(e.currentTarget).get('email');const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});if(error)throw error;message('Password reset email sent. Check your inbox.','success')}catch(err){message(err.message,'error')}};
- document.querySelectorAll('[data-auth-tab]').forEach(btn=>btn.onclick=()=>{document.querySelectorAll('[data-auth-tab]').forEach(x=>x.classList.toggle('active',x===btn));$('#loginForm').hidden=btn.dataset.authTab!=='login';$('#resetForm').hidden=btn.dataset.authTab!=='reset';hideMessage()});
+
+ async function submitPublicForm(formId,functionName,captchaName,successText,extra={}) {
+  const form=$(formId),button=form.querySelector('button[type="submit"]');
+  form.onsubmit=async e=>{e.preventDefault();button.disabled=true;hideMessage();try{
+   const fd=new FormData(form),token=captchaToken(captchaName);if(!token)throw new Error('Please complete the CAPTCHA verification.');
+   const body={...Object.fromEntries(fd.entries()),...extra,captchaToken:token};
+   if(captchaName==='school')body.classes_offered=fd.getAll('classes_offered');
+   const {data,error}=await client.functions.invoke(functionName,{body});
+   if(error)throw new Error(error.message);if(data?.error)throw new Error(data.error);
+   message(successText+(data?.request_id?' Reference: '+data.request_id:data?.ticket_id?' Ticket: '+data.ticket_id:''),'success');form.reset();
+  }catch(err){message(err.message||'Submission failed. Please try again.','error')}
+  finally{resetCaptcha(captchaName);button.disabled=false}
+  };
+ }
+ submitPublicForm('#schoolRequestForm','submit-school-request','school','School registration request submitted successfully.');
+ submitPublicForm('#publicSupportForm','submit-support-ticket','support','Support ticket submitted successfully.');
+
+ $('#loginForm').onsubmit=async e=>{e.preventDefault();hideMessage();const b=e.submitter;b.disabled=true;try{if(!window.hcaptcha)throw new Error('CAPTCHA load nahi hua. Page refresh karke dobara try karein.');const captchaToken=captchaTokenForLogin();if(!captchaToken)throw new Error('Please complete the CAPTCHA verification.');const fd=new FormData(e.currentTarget);const {data,error}=await client.functions.invoke('secure-login',{body:{email:String(fd.get('email')).trim().toLowerCase(),password:fd.get('password'),captchaToken}});if(error)throw new Error(error.message);if(data?.error)throw new Error(data.error);if(!data?.session?.access_token)throw new Error('Secure login function returned no session.');const {data:s,error:se}=await client.auth.setSession(data.session);if(se)throw se;await loadIdentity(s.user||data.user)}catch(err){message(err.message||'Login failed','error')}finally{resetCaptcha('login');b.disabled=false}};
+ $('#resetForm').onsubmit=async e=>{e.preventDefault();try{const email=new FormData(e.currentTarget).get('email');const token=captchaToken('reset');if(!token)throw new Error('Please complete the CAPTCHA verification.');const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname,captchaToken:token});if(error)throw error;message('Password reset email sent. Check your inbox.','success')}catch(err){message(err.message,'error')}finally{resetCaptcha('reset')}};
+ document.querySelectorAll('[data-auth-tab]').forEach(btn=>btn.onclick=()=>{document.querySelectorAll('[data-auth-tab]').forEach(x=>x.classList.toggle('active',x===btn));$('#loginForm').hidden=btn.dataset.authTab!=='login';$('#resetForm').hidden=btn.dataset.authTab!=='reset';if(btn.dataset.authTab==='reset')renderCaptcha('reset');hideMessage()});
  $('#logoutBtn').onclick=async()=>{await client.auth.signOut();user=null;profile=null;studentLink=null;$('#appView').hidden=true;$('#authView').hidden=false;$('#topUser').textContent=''};
  $('#year').textContent=new Date().getFullYear();
+ $('#schoolRequestToggle').onclick=()=>{const f=$('#schoolRequestForm');f.hidden=!f.hidden;if(!f.hidden)renderCaptcha('school')};
+ $('#publicSupportToggle').onclick=()=>{const f=$('#publicSupportForm');f.hidden=!f.hidden;if(!f.hidden)renderCaptcha('support')};
  if(!client){message('Supabase SDK or configuration missing. Check supabase-config.js.','error');return}
  client.auth.getSession().then(async({data,error})=>{if(error)return;if(data.session?.user){try{await loadIdentity(data.session.user)}catch(e){await client.auth.signOut();message(e.message,'error')}}});
  client.auth.onAuthStateChange((event,session)=>{if(event==='PASSWORD_RECOVERY'){$('#authView').hidden=false;$('#appView').hidden=true;$('#loginForm').hidden=true;$('#resetForm').hidden=true;$('#newPasswordForm').hidden=false;message('Choose a new password for your account.','success')}});
