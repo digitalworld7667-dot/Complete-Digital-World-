@@ -27,10 +27,7 @@ Deno.serve(async (req) => {
     const { error: updateError } = await admin.from('profiles').update({ account_status: status }).eq('id', targetId);
     if (updateError) return reply({ error: updateError.message }, 400);
     const { error: authUpdateError } = await admin.auth.admin.updateUserById(targetId, { ban_duration: status === 'inactive' ? '876000h' : 'none' });
-    if (authUpdateError) {
-      await admin.from('profiles').update({ account_status: target.account_status || 'active' }).eq('id', targetId);
-      return reply({ error: 'Account status change was rolled back because Auth update failed: ' + authUpdateError.message }, 500);
-    }
+    if (authUpdateError) { await admin.from('profiles').update({ account_status: target.account_status || 'active' }).eq('id', targetId); return reply({ error: 'Account status change was rolled back because Auth update failed: ' + authUpdateError.message }, 500); }
     await admin.from('activity_logs').insert({ school_id: target.school_id, actor_profile_id: caller.id, action: 'ACCOUNT_STATUS_CHANGED', entity_table: 'profiles', entity_id: targetId, new_data: { account_status: status, role: target.role } });
     return reply({ success: true, user_id: targetId, status });
   }
@@ -57,6 +54,29 @@ Deno.serve(async (req) => {
     if (!requestId || !['approved','rejected'].includes(decision)) return reply({ error: 'request_id and approved/rejected decision are required.' }, 400);
     const { data: reviewResult, error: reviewError } = await admin.rpc('review_school_request_atomic', { p_request_id: requestId, p_decision: decision, p_reviewer_id: caller.id, p_rejection_reason: decision === 'rejected' ? String(body.reason || '').slice(0, 1000) : null });
     if (reviewError) { const message = reviewError.message || 'Could not review school request.'; const status = /already been reviewed/i.test(message) ? 409 : /not found/i.test(message) ? 404 : /Super Admin/i.test(message) ? 403 : 400; return reply({ error: message }, status); }
+    if (decision === 'approved' && reviewResult?.school_id) {
+      const { data: requestRow, error: requestFetchError } = await admin.from('school_requests').select('contact_person,contact_email').eq('id', requestId).single();
+      if (requestFetchError || !requestRow?.contact_email) return reply({ ...reviewResult, invitation_sent: false, warning: 'School approved, but School Admin contact email could not be read. Use Accounts to invite manually.' });
+      const email = String(requestRow.contact_email).trim().toLowerCase(), fullName = String(requestRow.contact_person || 'School Admin').trim().slice(0,120);
+      const { data: usersPage, error: usersError } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
+      if (usersError) return reply({ ...reviewResult, invitation_sent: false, warning: 'School approved, but account lookup failed. Use Accounts to invite manually.' });
+      let authUser = usersPage.users.find((u: any) => (u.email || '').toLowerCase() === email);
+      if (!authUser) {
+        const inviteOptions: any = { data: { full_name: fullName } };
+        if (siteUrl) inviteOptions.redirectTo = siteUrl;
+        const { data: invited, error: inviteError } = await admin.auth.admin.inviteUserByEmail(email, inviteOptions);
+        if (inviteError || !invited?.user) return reply({ ...reviewResult, invitation_sent: false, warning: 'School approved, but invitation email failed: ' + (inviteError?.message || 'Unknown error') });
+        authUser = invited.user;
+      }
+      const { data: existingProfile } = await admin.from('profiles').select('id,role,school_id').eq('id', authUser.id).maybeSingle();
+      if (existingProfile && (existingProfile.role !== 'school_admin' || existingProfile.school_id !== reviewResult.school_id)) return reply({ ...reviewResult, invitation_sent: false, warning: 'This email is already linked to another account. Review Accounts manually.' });
+      if (!existingProfile) {
+        const { error: profileCreateError } = await admin.from('profiles').insert({ id: authUser.id, school_id: reviewResult.school_id, full_name: fullName, role: 'school_admin' });
+        if (profileCreateError) return reply({ ...reviewResult, invitation_sent: false, warning: 'School approved, but profile creation failed: ' + profileCreateError.message });
+      }
+      await admin.from('activity_logs').insert({ school_id: reviewResult.school_id, actor_profile_id: caller.id, action: 'SCHOOL_ADMIN_INVITATION_PROCESSED', entity_table: 'profiles', entity_id: authUser.id, new_data: { email, role: 'school_admin' } });
+      return reply({ ...reviewResult, invitation_sent: true, school_admin_user_id: authUser.id, message: 'School approved and School Admin invitation requested.' });
+    }
     return reply(reviewResult);
   }
   return reply({ error: 'Unsupported action.' }, 400);
