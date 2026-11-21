@@ -31,16 +31,16 @@ jobs:
           supabase link --project-ref "$SUPABASE_PROJECT_ID"
 
       - name: Deploy secure login function
-        run: supabase functions deploy secure-login --no-verify-jwt
+        run: supabase functions deploy secure-login --no-verify-jwt --yes
 
       - name: Deploy account provisioning function
-        run: supabase functions deploy provision-user --no-verify-jwt
+        run: supabase functions deploy provision-user --no-verify-jwt --yes
 
       - name: Deploy administrator actions function
-        run: supabase functions deploy admin-account-action --no-verify-jwt
+        run: supabase functions deploy admin-account-action --no-verify-jwt --yes
 
       - name: Deploy public school request function
-        run: supabase functions deploy submit-school-request --no-verify-jwt
+        run: supabase functions deploy submit-school-request --no-verify-jwt --yes
 
       - name: Deploy public support ticket function
-        run: supabase functions deploy submit-support-ticket --no-verify-jwt
+        run: supabase functions deploy submit-support-ticket --no-verify-jwt --yes
