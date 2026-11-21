@@ -1,0 +1,14 @@
+[functions.secure-login]
+verify_jwt = false
+
+[functions.provision-user]
+verify_jwt = false
+
+[functions.admin-account-action]
+verify_jwt = false
+
+[functions.submit-school-request]
+verify_jwt = false
+
+[functions.submit-support-ticket]
+verify_jwt = false
