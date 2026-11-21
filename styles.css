@@ -399,3 +399,29 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+
+/* Shared workspace shell is role-independent: Super Admin, School Admin,
+   Teacher, Student, Parent and Bus Driver all use the same responsive frame. */
+#appView:not([hidden]) {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+}
+#appView:not([hidden]) *,
+#appView:not([hidden]) *::before,
+#appView:not([hidden]) *::after {
+  box-sizing: border-box;
+}
+#appView:not([hidden]) .welcome,
+#appView:not([hidden]) .dashboard-shell,
+#appView:not([hidden]) .sidebar,
+#appView:not([hidden]) #panel {
+  min-width: 0;
+}
+#appView:not([hidden]) #panel img,
+#appView:not([hidden]) #panel input,
+#appView:not([hidden]) #panel select,
+#appView:not([hidden]) #panel textarea {
+  max-width: 100%;
+}
