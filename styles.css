@@ -226,3 +226,176 @@
     display: none !important;
   }
 }
+
+
+/* Universal responsive admin frame: desktop, tablet and phone */
+@media (max-width: 760px) {
+  html:has(#appView:not([hidden])),
+  body:has(#appView:not([hidden])) {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden !important;
+  }
+  body:has(#appView:not([hidden])) {
+    position: fixed;
+    inset: 0;
+    display: block;
+  }
+  body:has(#appView:not([hidden])) > header.top {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 56px;
+    min-height: 56px;
+    width: 100%;
+    padding: 0 10px;
+    z-index: 30;
+  }
+  body:has(#appView:not([hidden])) > main.wrap {
+    position: absolute;
+    inset: 56px 0 0 0;
+    width: 100% !important;
+    height: auto !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 10px 10px 12px !important;
+    overflow: hidden !important;
+  }
+  #appView:not([hidden]) {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+  #appView:not([hidden]) .welcome {
+    flex: 0 0 auto;
+    margin: 0 0 8px;
+    min-width: 0;
+  }
+  #appView:not([hidden]) .welcome h1 {
+    font-size: clamp(20px, 4vw, 27px);
+    line-height: 1.2;
+    margin: 0;
+  }
+  #appView:not([hidden]) .welcome p {
+    margin: 4px 0 0;
+    font-size: 12px;
+  }
+  #appView:not([hidden]) .dashboard-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 0;
+    gap: 8px;
+    margin: 0;
+    overflow: hidden;
+  }
+  #appView:not([hidden]) .sidebar {
+    position: relative;
+    top: auto;
+    width: 100%;
+    height: auto;
+    max-height: 112px;
+    min-height: 0;
+    padding: 7px;
+    overflow: hidden;
+  }
+  #appView:not([hidden]) .sidebar-heading {
+    padding: 2px 5px 5px;
+  }
+  #appView:not([hidden]) .nav {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 6px;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0 0 4px;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+  #appView:not([hidden]) .nav button {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: max-content;
+    white-space: nowrap;
+    padding: 8px 11px;
+    font-size: 12px;
+  }
+  #appView:not([hidden]) #panel {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    min-width: 0;
+    padding: 12px;
+    overflow: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  #appView:not([hidden]) .panel {
+    min-width: 0;
+    max-width: 100%;
+  }
+  #appView:not([hidden]) .table-wrap,
+  #appView:not([hidden]) .school-table {
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  #appView:not([hidden]) table {
+    min-width: 680px;
+  }
+  body:has(#appView:not([hidden])) > footer {
+    display: none !important;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1100px) {
+  body:has(#appView:not([hidden])) > main.wrap {
+    padding: 12px 14px 14px !important;
+  }
+  #appView:not([hidden]) .dashboard-shell {
+    grid-template-columns: 190px minmax(0, 1fr);
+    gap: 12px;
+  }
+  #appView:not([hidden]) .sidebar {
+    padding: 9px;
+  }
+  #appView:not([hidden]) .nav button {
+    padding: 8px 9px;
+    font-size: 12px;
+  }
+  #appView:not([hidden]) #panel {
+    padding: 16px;
+  }
+  #appView:not([hidden]) table {
+    min-width: 760px;
+  }
+}
+
+@media (max-width: 420px) {
+  body:has(#appView:not([hidden])) > header.top .brand b {
+    font-size: 11px;
+  }
+  body:has(#appView:not([hidden])) > header.top .brand small {
+    font-size: 9px;
+  }
+  #appView:not([hidden]) .welcome .button,
+  #appView:not([hidden]) .welcome button {
+    padding: 7px 9px;
+    font-size: 11px;
+  }
+  #appView:not([hidden]) #panel {
+    padding: 9px;
+  }
+  #appView:not([hidden]) .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
