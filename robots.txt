@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://digitalworld7667-dot.github.io/Complete-Digital-World-/sitemap.xml
