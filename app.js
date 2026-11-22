@@ -199,13 +199,15 @@
    const raw=await file.text();
    const parseCsv=(text)=>{const rows=[];let row=[],field='',quoted=false;for(let i=0;i<text.length;i++){const c=text[i];if(quoted){if(c==='"'&&text[i+1]==='"'){field+='"';i++}else if(c==='"')quoted=false;else field+=c}else if(c==='"')quoted=true;else if(c===','){row.push(field);field=''}else if(c==='\n'){row.push(field);rows.push(row);row=[];field=''}else if(c!=='\r')field+=c}row.push(field);if(row.some(x=>x.trim()))rows.push(row);return rows};
    const parsed=parseCsv(raw);if(parsed.length<2)throw new Error('CSV has no data rows.');
-   const headers=parsed[0].map(x=>x.trim().toLowerCase().replace(/^\ufeff/,''));const required=['full_name','role'];if(required.some(h=>!headers.includes(h)))throw new Error('CSV must include full_name and role columns.');if(!headers.includes('class_name')||!headers.includes('roll_number'))throw new Error('CSV must include class_name and roll_number columns for this import template.');
+   const headers=parsed[0].map(x=>x.trim().toLowerCase().replace(/^\ufeff/,''));const required=['full_name','role'];if(required.some(h=>!headers.includes(h)))throw new Error('CSV must include full_name and role columns.');
    const records=parsed.slice(1).filter(r=>r.some(v=>v.trim())).map(r=>Object.fromEntries(headers.map((h,i)=>[h,(r[i]||'').trim()])));
    if(records.length>100)throw new Error('Maximum 100 accounts per CSV upload.');
    const results=[];let done=0;
    for(const row of records){
     const role=(row.role||'student').toLowerCase();
     if(!['student','teacher'].includes(role)){results.push({name:row.full_name||'Row '+(done+1),error:'Role must be student or teacher'});continue}
+    if(role==='student'&&(!row.class_name||!row.roll_number)){results.push({name:row.full_name||'Row '+(done+1),error:'Student row needs class_name and roll_number'});continue}
+    if(role==='teacher'&&!row.class_names){results.push({name:row.full_name||'Row '+(done+1),error:'Teacher row needs class_names'});continue}
     const payload={...row,role,school_id:profile.school_id||row.school_id};
     if(!payload.school_id){results.push({name:row.full_name||'Row '+(done+1),error:'school_id is required'});continue}
     try{const {data,error}=await client.functions.invoke('provision-user',{body:payload});if(error||data?.error)throw new Error(data?.error||error.message);results.push({name:row.full_name,login_id:data.login_id,password:data.temporary_password,error:null})}catch(err){results.push({name:row.full_name||'Row '+(done+1),error:err.message||String(err)})}
