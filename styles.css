@@ -580,3 +580,85 @@
   #appView:not([hidden]) .sidebar { width: 76px; }
   #appView:not([hidden]) #panel { padding: 7px; }
 }
+
+
+/* Phone usability correction: full-width workspace and comfortable touch targets. */
+@media (max-width: 760px) {
+  #appView:not([hidden]) .dashboard-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 7px;
+  }
+  #appView:not([hidden]) .sidebar {
+    width: 100%;
+    height: auto;
+    max-height: 92px;
+    padding: 6px 7px;
+    overflow: hidden;
+  }
+  #appView:not([hidden]) .sidebar-heading {
+    text-align: left;
+    font-size: 9px;
+    padding: 2px 4px 5px;
+  }
+  #appView:not([hidden]) .nav {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 6px;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0 0 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+  #appView:not([hidden]) .nav button {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: max-content;
+    white-space: nowrap;
+    font-size: 11px;
+    line-height: 1.2;
+    padding: 9px 12px;
+  }
+  #appView:not([hidden]) #panel {
+    width: 100%;
+    min-width: 0;
+    padding: 12px;
+  }
+  #appView:not([hidden]) #panel .att-choice {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  #appView:not([hidden]) #panel .att-pick {
+    min-height: 42px;
+    min-width: 62px;
+    padding: 9px 11px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+  #appView:not([hidden]) #panel #markAllPresent,
+  #appView:not([hidden]) #panel #saveClassAttendance {
+    min-height: 44px;
+    padding: 10px 14px;
+    font-size: 12px;
+  }
+  #appView:not([hidden]) #panel .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  #appView:not([hidden]) #panel .form-grid .wide {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 420px) {
+  #appView:not([hidden]) #panel .form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  #appView:not([hidden]) #panel .att-pick {
+    min-width: 58px;
+    padding: 9px 8px;
+  }
+}
