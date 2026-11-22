@@ -199,7 +199,7 @@
    const raw=await file.text();
    const parseCsv=(text)=>{const rows=[];let row=[],field='',quoted=false;for(let i=0;i<text.length;i++){const c=text[i];if(quoted){if(c==='"'&&text[i+1]==='"'){field+='"';i++}else if(c==='"')quoted=false;else field+=c}else if(c==='"')quoted=true;else if(c===','){row.push(field);field=''}else if(c==='\\n'){row.push(field);rows.push(row);row=[];field=''}else if(c!=='\\r')field+=c}row.push(field);if(row.some(x=>x.trim()))rows.push(row);return rows};
    const parsed=parseCsv(raw);if(parsed.length<2)throw new Error('CSV has no data rows.');
-   const headers=parsed[0].map(x=>x.trim().toLowerCase().replace(/^\\ufeff/,''));
+   const headers=parsed[0].map(x=>x.trim().toLowerCase().replace(/^\\ufeff/,''));const required=['full_name','role'];if(required.some(h=>!headers.includes(h)))throw new Error('CSV must include full_name and role columns.');if(!headers.includes('class_name')||!headers.includes('roll_number'))throw new Error('CSV must include class_name and roll_number columns for this import template.');
    const records=parsed.slice(1).filter(r=>r.some(v=>v.trim())).map(r=>Object.fromEntries(headers.map((h,i)=>[h,(r[i]||'').trim()])));
    if(records.length>100)throw new Error('Maximum 100 accounts per CSV upload.');
    const results=[];let done=0;
