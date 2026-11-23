@@ -39,6 +39,7 @@ Deno.serve(async (req) => {
     if (targetProfileError || !targetProfile) return reply({ error: 'Account profile not found.' }, 404);
     if (targetProfile.role === 'super_admin' && actor.role !== 'super_admin') return reply({ error: 'Only Super Admin can reset a Super Admin account.' }, 403);
     if (actor.role === 'school_admin' && (!actor.school_id || targetProfile.school_id !== actor.school_id)) return reply({ error: 'You can manage only accounts in your own school.' }, 403);
+    if (actor.role === 'school_admin' && targetProfile.role === 'school_admin') return reply({ error: 'School Admin cannot reset another School Admin account.' }, 403);
     const bytes = new Uint8Array(24); crypto.getRandomValues(bytes);
     const tempPassword = Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('') + 'Aa7!';
     const { error: flagError } = await admin.from('profiles').update({ must_change_password: true }).eq('id', targetId);
