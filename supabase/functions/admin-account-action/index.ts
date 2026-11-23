@@ -34,18 +34,22 @@ Deno.serve(async (req) => {
   if (action === 'send_password_reset') {
     const targetId = String(body.user_id || '');
     if (!targetId) return reply({ error: 'user_id is required.' }, 400);
-    const { data: target, error: targetError } = await admin.auth.admin.getUserById(targetId);
-    if (targetError || !target?.user?.email) return reply({ error: 'Account email not found.' }, 404);
-    const { data: targetProfile } = await admin.from('profiles').select('role,school_id').eq('id', targetId).single();
-    if (!targetProfile) return reply({ error: 'Account profile not found.' }, 404);
+    const { data: targetProfile, error: targetProfileError } = await admin.from('profiles')
+      .select('role,school_id,login_id,must_change_password').eq('id', targetId).single();
+    if (targetProfileError || !targetProfile) return reply({ error: 'Account profile not found.' }, 404);
     if (targetProfile.role === 'super_admin' && actor.role !== 'super_admin') return reply({ error: 'Only Super Admin can reset a Super Admin account.' }, 403);
     if (actor.role === 'school_admin' && (!actor.school_id || targetProfile.school_id !== actor.school_id)) return reply({ error: 'You can manage only accounts in your own school.' }, 403);
-    if (!siteUrl) return reply({ error: 'SITE_URL secret is not configured in Supabase.' }, 500);
-    const publicClient = createClient(url, anon, { auth: { persistSession: false, autoRefreshToken: false } });
-    const { error } = await publicClient.auth.resetPasswordForEmail(target.user.email, { redirectTo: siteUrl });
-    if (error) return reply({ error: error.message }, 400);
-    await admin.from('activity_logs').insert({ school_id: targetProfile.school_id, actor_profile_id: caller.id, action: 'PASSWORD_RESET_EMAIL_SENT', entity_table: 'profiles', entity_id: targetId });
-    return reply({ success: true, message: 'Password reset email requested.' });
+    const bytes = new Uint8Array(24); crypto.getRandomValues(bytes);
+    const tempPassword = Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('') + 'Aa7!';
+    const { error: flagError } = await admin.from('profiles').update({ must_change_password: true }).eq('id', targetId);
+    if (flagError) return reply({ error: 'Could not require a password change for this account.' }, 500);
+    const { error: passwordError } = await admin.auth.admin.updateUserById(targetId, { password: tempPassword });
+    if (passwordError) {
+      await admin.from('profiles').update({ must_change_password: targetProfile.must_change_password === true }).eq('id', targetId);
+      return reply({ error: 'Could not issue a temporary password: ' + passwordError.message }, 400);
+    }
+    await admin.from('activity_logs').insert({ school_id: targetProfile.school_id, actor_profile_id: caller.id, action: 'TEMPORARY_PASSWORD_ISSUED', entity_table: 'profiles', entity_id: targetId });
+    return reply({ success: true, login_id: targetProfile.login_id, temporary_password: tempPassword, message: 'Temporary password issued. Share it privately; user must change it at next login.' });
   }
   if (action === 'delete_account') return reply({ error: 'Permanent account deletion is disabled to protect linked academic and financial records. Use set_account_status with status=inactive to block access while preserving records.' }, 409);
   if (action === 'review_school_request') {
