@@ -7,7 +7,7 @@ const temporaryPassword = () => {
   return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('') + 'Aa7!';
 };
 const loginCode: Record<string,string> = { student:'STD', teacher:'TCH', parent:'PAR', bus_driver:'DRV', school_admin:'ADM' };
-async function createLoginId(admin: ReturnType<typeof createClient>, role: string) {
+async function createLoginId(admin: any, role: string) {
   for (let attempt=0; attempt<10; attempt++) {
     const bytes = new Uint32Array(1); crypto.getRandomValues(bytes);
     const id = 'MSD-' + loginCode[role] + '-' + String(10000000 + (bytes[0] % 90000000));
