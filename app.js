@@ -46,7 +46,7 @@
   const [paymentsResult,feesResult,studentResult]=await Promise.all([
    client.from('fee_payments').select('id,fee_id,amount_paid,payment_method,payment_date,receipt_number,transaction_reference').eq('student_id',studentLink).order('payment_date',{ascending:false}).limit(300),
    client.from('fees').select('id,fee_type,period,amount,discount_amount,late_fee_amount,due_date,status').eq('student_id',studentLink).order('due_date',{ascending:false}).limit(300),
-   client.from('students').select('student_name,class_name,section,roll_number,admission_number').eq('id',studentLink).single()
+   client.from('students').select('student_name,class_name,section,roll_number,admission_number,school_id').eq('id',studentLink).single()
   ]);
   for(const x of [paymentsResult,feesResult,studentResult])if(x.error)throw x.error;
   const payments=paymentsResult.data||[],fees=feesResult.data||[],student=studentResult.data||{};
