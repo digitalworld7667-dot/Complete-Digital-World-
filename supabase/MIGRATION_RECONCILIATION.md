@@ -26,7 +26,7 @@ This manifest records the migrations reported as applied by the live Supabase pr
 
 ## Important reconciliation note
 
-The live project reports 17 applied migrations, while this repository currently contains only the later file `20261123000100_add_login_ids_and_password_activation.sql`. The SQL source for the earlier 17 migration versions is not present in the repository and cannot be reconstructed safely from the migration history table alone. Do not mark these versions repaired by creating empty placeholder SQL files, and do not replay guessed DDL against production.
+The live project reported 17 previously applied migrations at the time of the initial audit. The repository contains `20261123000100_add_login_ids_and_password_activation.sql` plus the forward-only privilege-hardening migration recorded in this repair branch. The SQL source for the 17 earlier migration versions is not present in the repository and cannot be reconstructed safely from the migration history table alone. Do not mark these versions repaired by creating empty placeholder SQL files, and do not replay guessed DDL against production.
 
 Before restoring migration source history, obtain the original migration files from the developer's working copy, release archives, or a verified backup. Compare each migration against the live schema, policies, functions, triggers, indexes, and grants. Then reconcile using a reviewed baseline or forward-only migrations.
 
