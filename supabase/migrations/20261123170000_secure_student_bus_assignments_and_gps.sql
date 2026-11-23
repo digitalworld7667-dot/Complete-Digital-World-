@@ -26,7 +26,45 @@ CREATE TABLE IF NOT EXISTS public.student_bus_assignments (
 CREATE UNIQUE INDEX IF NOT EXISTS buses_id_school_id_key
   ON public.buses (id, school_id);
 
--- A student can have only one open-ended/current assignment at a time.
+
+-- Prevent overlapping assignment date ranges, including concurrent writes.
+CREATE OR REPLACE FUNCTION private.prevent_overlapping_student_bus_assignments()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path TO ''
+AS $function$
+BEGIN
+  PERFORM pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended(NEW.school_id::text || ':' || NEW.student_id::text, 0)
+  );
+
+  IF EXISTS (
+    SELECT 1
+    FROM public.student_bus_assignments a
+    WHERE a.school_id = NEW.school_id
+      AND a.student_id = NEW.student_id
+      AND a.id IS DISTINCT FROM NEW.id
+      AND pg_catalog.daterange(a.assigned_from, a.assigned_until, '[]')
+          && pg_catalog.daterange(NEW.assigned_from, NEW.assigned_until, '[]')
+  ) THEN
+    RAISE EXCEPTION 'Student already has an overlapping bus assignment period'
+      USING ERRCODE = '23P01';
+  END IF;
+
+  RETURN NEW;
+END;
+$function$;
+
+DROP TRIGGER IF EXISTS prevent_overlapping_student_bus_assignments
+  ON public.student_bus_assignments;
+CREATE TRIGGER prevent_overlapping_student_bus_assignments
+BEFORE INSERT OR UPDATE OF school_id, student_id, assigned_from, assigned_until
+ON public.student_bus_assignments
+FOR EACH ROW
+EXECUTE FUNCTION private.prevent_overlapping_student_bus_assignments();
+
+-- Fast lookup for currently open assignments.
 CREATE UNIQUE INDEX IF NOT EXISTS student_bus_assignments_one_open_assignment
   ON public.student_bus_assignments (school_id, student_id)
   WHERE assigned_until IS NULL;
