@@ -219,7 +219,7 @@
    const print=$('#printBulkSlips');if(print)print.onclick=()=>{const w=window.open('','_blank','width=800,height=900');if(!w){appMessage('Allow pop-ups to print slips.','error');return}w.document.write('<html><head><title>MS Digital Tech Login Slips</title><style>body{font:15px Arial;padding:20px}article{border:1px solid #888;padding:12px;margin:10px 0;break-inside:avoid}code{font-weight:bold}</style></head><body>'+slips+'</body></html>');w.document.close();w.focus();w.print()};
    appMessage('CSV import finished: '+ok.length+' created, '+failed.length+' failed. Save/print slips securely.','success');
   }catch(err){output.textContent=err.message||String(err);appMessage(err.message||String(err),'error')}finally{bulkButton.disabled=false}
- };};
+ };
 }
 
  $('#loginForm').onsubmit=async e=>{e.preventDefault();hideMessage();if(!ensureCaptcha('login'))return;const b=e.submitter;b.disabled=true;try{const fd=new FormData(e.currentTarget);const {data,error}=await client.functions.invoke('secure-login',{body:{login_id:String(fd.get('login_id')).trim(),password:fd.get('password'),captchaToken:captchaTokens.login}});if(error)throw new Error(error.message);if(data?.error)throw new Error(data.error);if(!data?.session?.access_token)throw new Error('Secure login function returned no session.');const {data:s,error:se}=await client.auth.setSession(data.session);if(se)throw se;await loadIdentity(s.user||data.user)}catch(err){message(err.message||'Login failed','error');resetCaptcha('login')}finally{b.disabled=false}};
