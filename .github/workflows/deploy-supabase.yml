@@ -44,3 +44,6 @@ jobs:
 
       - name: Deploy public support ticket function
         run: supabase functions deploy submit-support-ticket --no-verify-jwt --yes
+
+      - name: Deploy first-login password activation function
+        run: supabase functions deploy complete-first-login --no-verify-jwt --yes
