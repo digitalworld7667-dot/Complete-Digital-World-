@@ -836,3 +836,62 @@ html{background:#101a2a;scroll-behavior:smooth}body{background:#101a2a!important
 .auth-card .tabs button{color:#bdc6d2}.auth-card .tabs button.active{color:#e4c98f;border-color:#c5a15b}
 .wrap{color:#f4f0e8}footer{background:#101a2a!important;color:#bdc6d2!important;border-color:#39485d!important}
 @media(max-width:650px){.landing-section,.cap-intro-section,.capability-tables,.cap-roles,.capability-section{background:#101a2a!important}}
+
+/* Premium role-specific admin dashboards */
+#appView{max-width:1440px;margin:0 auto;padding:24px 28px 60px}
+#appView .welcome{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:20px 24px;margin:0 0 22px;background:linear-gradient(110deg,#17263b,#101a2a);border:1px solid #a9864d66;border-radius:18px;box-shadow:0 15px 40px #0003}
+#appView .welcome h1{color:#fff;margin:8px 0 4px;font-size:30px;letter-spacing:-.8px}
+#appView .welcome .eyebrow{color:#dfc184}#appView .welcome .muted{color:#bdc6d2}
+#appView .dashboard-shell{display:grid;grid-template-columns:245px minmax(0,1fr);gap:20px;align-items:start}
+#appView .sidebar{background:#111d30;border:1px solid #39485d;border-radius:16px;padding:18px 12px;position:sticky;top:16px;max-height:calc(100vh - 32px);overflow:auto}
+#appView .sidebar-heading{color:#d7b977;font-size:10px;letter-spacing:1.7px;font-weight:800;padding:4px 12px 15px}
+#appView .nav{display:flex;flex-direction:column;gap:5px}
+#appView .nav button{border:1px solid transparent;background:transparent;color:#c0c9d5;text-align:left;border-radius:9px;padding:11px 12px;font-size:13px;cursor:pointer}
+#appView .nav button:hover{background:#1d2d43;color:#fff}
+#appView .nav button.active{background:linear-gradient(90deg,#c5a15b22,#c5a15b08);border-color:#b8914c66;border-left:3px solid #d7b977;color:#f4dca8;font-weight:750}
+#appView .panel{min-width:0;background:#111d30;border:1px solid #39485d;border-radius:17px;padding:22px;box-shadow:0 15px 40px #0002;color:#f4f0e8}
+#appView .premium-dashboard{display:flex;flex-direction:column;gap:20px}
+#appView .premium-dashboard-heading{display:flex;justify-content:space-between;align-items:center;gap:15px}
+#appView .premium-eyebrow{font-size:10px;letter-spacing:1.8px;color:#d9bb7d;font-weight:800}
+#appView .premium-dashboard-heading h2{color:#fff;font-size:25px;margin:7px 0 4px}
+#appView .premium-dashboard-heading p{color:#aeb9c8;font-size:12px;margin:0}
+#appView .premium-live{border:1px solid #3b6a55;color:#a7d8b8;background:#163327;border-radius:30px;padding:8px 12px;font-size:9px;letter-spacing:.8px;white-space:nowrap}
+#appView .premium-live i{display:inline-block;width:6px;height:6px;background:#56c887;border-radius:50%;margin-right:6px}
+#appView .premium-stat-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+#appView .premium-stat-card{position:relative;display:flex;flex-direction:column;gap:7px;background:linear-gradient(145deg,#1b2a40,#152237);border:1px solid #3a495d;border-radius:13px;padding:17px;min-height:130px}
+#appView .premium-stat-icon{position:absolute;right:15px;top:13px;width:31px;height:31px;display:grid;place-items:center;border-radius:9px;background:#c5a15b1b;color:#e1c184;font-size:16px}
+#appView .premium-stat-card small{color:#aab5c4;font-size:9px;letter-spacing:1.1px;font-weight:750}
+#appView .premium-stat-card strong{font-size:28px;line-height:1.2;color:#f2d99f;font-weight:750}
+#appView .premium-stat-card em{font-size:10px;color:#8492a4;font-style:normal}
+#appView .premium-dashboard-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(230px,.8fr);gap:14px}
+#appView .premium-widget{background:#17253a;border:1px solid #3a495d;border-radius:14px;padding:18px;min-width:0}
+#appView .premium-widget-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+#appView .premium-widget-heading small{color:#d7b977;font-size:9px;letter-spacing:1.3px;font-weight:800}
+#appView .premium-widget-heading h3{color:#fff;font-size:16px;margin:6px 0 0}
+#appView .premium-widget-tag{font-size:8px;color:#b8c2d0;border:1px solid #44536a;border-radius:30px;padding:6px 8px}
+#appView .premium-chart{display:flex;flex-direction:column;gap:15px;margin-top:26px}
+#appView .premium-chart-row{display:grid;grid-template-columns:110px minmax(40px,1fr) 35px;align-items:center;gap:10px;color:#c3ccd7;font-size:10px}
+#appView .premium-chart-row>b{text-align:right;color:#e9d19b;font-size:11px}
+#appView .premium-chart-track{height:9px;background:#29394f;border-radius:20px;overflow:hidden}
+#appView .premium-chart-track i{display:block;height:100%;background:linear-gradient(90deg,#9a7138,#ebd18e);border-radius:20px;box-shadow:0 0 12px #c5a15b55}
+#appView .premium-note{font-size:10px;color:#8190a2;line-height:1.6;margin:20px 0 0}
+#appView .premium-summary-number{font-size:42px;color:#e6ca8d;font-weight:800;margin:22px 0 0}
+#appView .premium-summary-widget>p{font-size:11px;color:#aab5c4;margin:0 0 16px}
+#appView .premium-summary-list{border-top:1px solid #3a495d}
+#appView .premium-summary-list>div{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #2d3c51;font-size:11px;color:#c2cbd6}
+#appView .premium-summary-list b{color:#e4cd98}
+#appView .premium-secure-note{display:flex;align-items:center;gap:10px;background:#101a2a;border:1px solid #3a495d;border-radius:10px;padding:12px;margin-top:16px}
+#appView .premium-secure-note>span:first-child{color:#d7b977;font-size:20px}
+#appView .premium-secure-note b,#appView .premium-secure-note small{display:block}
+#appView .premium-secure-note b{font-size:10px;color:#e7d5ad}
+#appView .premium-secure-note small{font-size:9px;color:#95a2b2;margin-top:4px;line-height:1.5}
+#appView .premium-dashboard-footer{display:flex;justify-content:space-between;border-top:1px solid #35445a;padding-top:13px;color:#8794a5;font-size:8px;letter-spacing:1.2px}
+#appView .stat,#appView .card{background:#17253a;border-color:#3a495d;color:#f4f0e8}
+#appView h2,#appView h3,#appView h4{color:#fff}
+#appView p.muted,#appView .muted{color:#aeb9c8}
+#appView input,#appView select,#appView textarea{background:#101a2a;color:#fff;border-color:#46566c}
+#appView table th{background:#26364c;color:#e3ca94}#appView table td{background:#17253a;color:#d4dce6;border-color:#3b4a5e}
+#appView .outline{background:#17253a;border-color:#a8874d;color:#ead6a5}
+#appView .primary{background:linear-gradient(135deg,#e3ca91,#b58a46);color:#101a2a}
+@media(max-width:900px){#appView .dashboard-shell{grid-template-columns:1fr}#appView .sidebar{position:static;max-height:none}#appView .nav{flex-direction:row;flex-wrap:wrap}#appView .premium-dashboard-grid{grid-template-columns:1fr}}
+@media(max-width:600px){#appView{padding:14px 12px 40px}#appView .welcome{padding:16px;align-items:flex-start}#appView .welcome h1{font-size:23px}#appView .panel{padding:13px}#appView .premium-dashboard-heading{align-items:flex-start;flex-direction:column}#appView .premium-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}#appView .premium-stat-card{padding:13px;min-height:115px}#appView .premium-chart-row{grid-template-columns:82px minmax(30px,1fr) 25px;gap:7px}#appView .premium-dashboard-footer{gap:10px;flex-wrap:wrap}}
