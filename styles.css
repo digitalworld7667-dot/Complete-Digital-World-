@@ -806,3 +806,33 @@ footer{background:#0c1420;color:#c5c0b5;border-top:1px solid #c5a15b55}
 .cap-bottom-cta{background:radial-gradient(ellipse at 80% 20%,#34435a,#101a2a 70%);padding:70px 0;color:#fff}.cap-bottom-cta .section-kicker{color:#dfc184}.cap-bottom-cta h2{color:#fff}.cap-bottom-cta p{color:#c4ccd6;margin-bottom:25px}.cap-secondary-link{color:#e4d2aa;margin-left:22px;font-size:13px}
 @media(max-width:850px){.cap-hero-grid,.cap-intro-grid{grid-template-columns:1fr;gap:25px}.cap-table-grid{grid-template-columns:1fr}.cap-role-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:600px){.cap-hero{padding:60px 0}.cap-hero h1{font-size:42px}.cap-hero-grid p{font-size:15px}.cap-intro-section,.capability-tables,.cap-roles{padding:58px 0}.cap-role-grid{grid-template-columns:1fr}.cap-table-card th,.cap-table-card td{padding:10px 8px;font-size:11px}.cap-visual-body{grid-template-columns:83px 1fr}.cap-mini-nav{padding:13px 7px;font-size:8px}.cap-mini-content{padding:15px 10px}.cap-secondary-link{display:block;margin:18px 0 0}}
+
+/* Unified premium navy background across every public page and section */
+:root{--navy:#101a2a;--blue:#c5a15b;--pale:#17253a;--ink:#f4f0e8;--muted:#bdc6d2;--line:#344258;--white:#fff;--gold:#dfc184;--gold-light:#ead7a8}
+html{background:#101a2a;scroll-behavior:smooth}body{background:#101a2a!important;color:#f4f0e8}
+.marketing-home,.landing-section,.light-section,.dark-section,.cap-page,.cap-intro-section,.capability-tables,.cap-roles,.capability-section,.seo-page,.seo-content,.public-sections{background:#101a2a!important;color:#f4f0e8}
+.site-nav,.landing-hero,.dark-section,.landing-cta,.landing-footer,.cap-hero,.cap-bottom-cta{background:#101a2a!important}
+.landing-hero{background:radial-gradient(ellipse at 78% 48%,#24354b 0,#142238 42%,#101a2a 78%)!important}
+.landing-section,.cap-intro-section,.capability-tables,.cap-roles,.capability-section{border-top:1px solid #2c3b50}
+.section-intro h2,.cap-intro-grid h2,.capability-tables .section-intro h2,.cap-roles h2,.cap-bottom-cta h2,.capability-layout h2{color:#fff!important}
+.section-intro p,.cap-intro-grid p,.capability-layout>div>p{color:#bdc6d2!important}
+.landing-card,.role-grid article,.cap-role-grid article,.cap-table-card,.seo-columns article,.feature-card{background:#17253a!important;border:1px solid #39485d!important;box-shadow:0 12px 35px #0002!important}
+.landing-card h3,.role-grid h3,.cap-role-grid h3,.cap-table-card h3,.seo-columns h3,.feature-card h3{color:#fff!important}
+.landing-card p,.role-grid p,.cap-role-grid p,.cap-table-card td:last-child,.seo-columns p,.feature-card p{color:#bdc6d2!important}
+.cap-table-card table{background:#17253a!important;color:#e9edf2}
+.cap-table-card th,.cap-table-card td{background:#17253a!important;border-color:#3a495d!important;color:#d5dce6!important}
+.cap-table-card th{color:#e0c58d!important}.cap-table-card td:first-child{color:#fff!important}
+.cap-visual-card{background:#111d30;border-color:#b99455}.cap-visual-body{background:#17253a}
+.cap-mini-content{background:#17253a;color:#fff}.cap-mini-tiles i{background:#203149;border-color:#3a4b63;color:#dce3ed}.cap-mini-line{background:#43536a}
+.seo-hero{background:radial-gradient(ellipse at 78% 40%,#26374e 0,#142238 48%,#101a2a 82%)!important;border-color:#b99455}
+.seo-hero h1,.seo-hero p{color:#fff!important}.seo-detail p,.seo-detail h2{color:#e3e8ef!important}
+.seo-detail a,.text-link{color:#e1c184!important}
+.auth-layout .intro h1,.auth-layout .intro p{color:#fff}.auth-layout .intro h1 em{color:#dfc184}
+.auth-layout .trust span{background:#17253a;color:#e8edf3;border-color:#3a495d}
+.auth-card,.card{background:#17253a;color:#f4f0e8;border-color:#3a495d}
+.auth-card h2,.card h2{color:#fff}.auth-card .muted,.card .muted{color:#bdc6d2}
+.auth-card input,.auth-card select,.auth-card textarea,.card input,.card select,.card textarea{background:#101a2a;color:#fff;border-color:#46566c}
+.auth-card label,.card label{color:#e7eaf0}.auth-card .tabs{border-color:#3a495d}
+.auth-card .tabs button{color:#bdc6d2}.auth-card .tabs button.active{color:#e4c98f;border-color:#c5a15b}
+.wrap{color:#f4f0e8}footer{background:#101a2a!important;color:#bdc6d2!important;border-color:#39485d!important}
+@media(max-width:650px){.landing-section,.cap-intro-section,.capability-tables,.cap-roles,.capability-section{background:#101a2a!important}}
