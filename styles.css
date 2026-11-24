@@ -989,3 +989,11 @@ html{background:#101a2a;scroll-behavior:smooth}body{background:#101a2a!important
 #appView .premium-ad-slot>span{font-size:9px;letter-spacing:1.4px;color:#d9bd7e;font-weight:800}
 #appView .premium-ad-empty{margin-top:10px;min-height:110px;display:grid;place-items:center;text-align:center;color:#aeb9c8;background:#17253a;border-radius:9px;padding:20px}
 @media(max-width:600px){#appView .ad-admin-card{align-items:flex-start;flex-wrap:wrap}#appView .ad-admin-card img{width:100%;height:130px}#appView .ad-admin-actions{width:100%}}
+
+/* Keep the original bottom advertising area on Super Admin overview only */
+#appView .super-admin-ad-reserved{display:block;width:100%;min-height:220px;margin:30px 0 8px;padding:16px;border:1px dashed #b99455;border-radius:14px;background:linear-gradient(135deg,#101a2a,#17253a);box-sizing:border-box}
+#appView .super-admin-ad-label{display:block;color:#d9bd7e;font-size:9px;font-weight:800;letter-spacing:1.5px;margin-bottom:12px}
+#appView .super-admin-ad-placeholder{min-height:155px;display:grid;place-items:center;color:#aeb9c8;font-size:12px}
+#appView .super-admin-ad-link{display:flex;flex-direction:column;gap:7px;color:#f2dfb4;text-decoration:none}
+#appView .super-admin-ad-link img{display:block;width:100%;max-height:190px;min-height:130px;object-fit:contain;border-radius:8px}
+#appView .super-admin-ad-link span{font-size:12px;font-weight:700}
