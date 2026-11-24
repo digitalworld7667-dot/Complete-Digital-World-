@@ -448,6 +448,10 @@
  const chooser=$('#registrationChooser'),requestForm=$('#schoolRequestForm');
  function openRegistrationChooser(){ $('#appView').hidden=true;$('#authView').hidden=false;$('#loginForm').hidden=true;$('#resetForm').hidden=true;$('#newPasswordForm').hidden=true;requestForm.hidden=true;chooser.hidden=false;hideMessage();chooser.scrollIntoView({behavior:'smooth',block:'center'}); }
  document.querySelectorAll('[data-open-register]').forEach(btn=>btn.addEventListener('click',openRegistrationChooser));
+ function openLogin(){$('#appView').hidden=true;$('#authView').hidden=false;chooser.hidden=true;requestForm.hidden=true;$('#loginForm').hidden=false;$('#resetForm').hidden=true;$('#newPasswordForm').hidden=true;document.querySelectorAll('[data-auth-tab]').forEach(btn=>btn.classList.toggle('active',btn.dataset.authTab==='login'));hideMessage();renderCaptcha('login');$('#authView').scrollIntoView({behavior:'smooth',block:'start'});}
+ document.querySelectorAll('[data-open-login]').forEach(btn=>btn.addEventListener('click',openLogin));
+ document.querySelectorAll('[data-back-home]').forEach(btn=>btn.addEventListener('click',()=>{ $('#authView').hidden=true;$('#marketingHome').hidden=false;$('#marketingHome').scrollIntoView({behavior:'smooth',block:'start'});}));
+
  $('#schoolRequestToggle').onclick=openRegistrationChooser;
  $('#backToInstitutionChoices').onclick=()=>{requestForm.hidden=true;chooser.hidden=false;resetCaptcha('school')};
  document.querySelectorAll('[data-institution-choice]').forEach(btn=>btn.onclick=()=>{
