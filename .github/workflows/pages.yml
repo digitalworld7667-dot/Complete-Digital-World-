@@ -24,7 +24,7 @@ jobs:
       - name: Prepare public site files
         run: |
           mkdir -p dist
-          cp index.html app.js styles.css supabase-config.js dist/
+          cp index.html app.js styles.css supabase-config.js school-erp.html capabilities.html sitemap.xml robots.txt dist/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
