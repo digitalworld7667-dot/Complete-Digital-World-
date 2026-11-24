@@ -17,7 +17,8 @@ create policy user_notifications_read_own on public.user_notifications for selec
 drop policy if exists user_notifications_update_own on public.user_notifications;
 create policy user_notifications_update_own on public.user_notifications for update to authenticated using (recipient_profile_id=auth.uid()) with check (recipient_profile_id=auth.uid());
 revoke all on public.user_notifications from anon, public;
-grant select, update on public.user_notifications to authenticated;
+grant select on public.user_notifications to authenticated;
+grant update (read_at) on public.user_notifications to authenticated;
 
 create or replace function private.create_student_event_notifications(p_school_id uuid,p_student_id uuid,p_event_type text,p_title text,p_message text)
 returns void language plpgsql security definer set search_path = public, private, pg_temp as $$
