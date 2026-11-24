@@ -678,3 +678,61 @@
 .seo-detail p{margin:12px 0;max-width:900px}
 .seo-page{min-height:70vh}
 @media(max-width:760px){.seo-columns{grid-template-columns:1fr}.seo-hero{padding:26px 20px}.seo-hero p{font-size:16px}}
+
+
+/* MS Digital Tech premium navy, charcoal and champagne-gold visual refresh */
+:root{
+ --navy:#101b2b;--blue:#b9914b;--pale:#f4efe5;--ink:#182231;--muted:#667184;
+ --line:#e5dfd3;--white:#fff;--green:#16794a;--red:#a83232;
+ --gold:#c5a15b;--gold-light:#e4cf9d;--charcoal:#0c1420;
+}
+body{background:#f7f5f0;color:var(--ink);font-family:Inter,"Segoe UI",system-ui,sans-serif}
+.top{height:82px;background:rgba(12,20,32,.98);border-bottom:1px solid rgba(197,161,91,.32);padding:0 max(5vw,24px)}
+.brand{color:#fff;gap:14px}.brand b{font-size:15px;letter-spacing:.35px}.brand small{color:#c8c1b3;font-size:11px;letter-spacing:.7px}
+.logo{width:46px;height:46px;border-radius:13px;background:linear-gradient(145deg,#e2c783,#a77a35);color:#101b2b;box-shadow:0 5px 18px #0004;font-size:17px}
+.wrap{max-width:1240px}
+.auth-layout{gap:clamp(32px,6vw,90px);min-height:650px}
+.intro .eyebrow,.eyebrow{color:#9a773a;letter-spacing:2.2px}
+.intro h1{font-size:clamp(42px,5.3vw,70px);line-height:1.04;letter-spacing:-2.5px;color:#111c2b;font-weight:750}
+.intro h1 em{color:#a77c36}
+.intro p{font-size:18px;line-height:1.8;color:#667184;max-width:590px}
+.trust span{background:#fffdf8;border:1px solid #e6dcc8;border-radius:999px;padding:10px 15px;color:#4c5360}
+.card{border:1px solid #e8dfce;border-radius:20px;box-shadow:0 24px 70px rgba(31,29,23,.09)}
+.auth-card{padding:clamp(24px,3vw,38px)}
+.tabs{gap:26px}.tabs button.active{color:#987039;border-color:#b9914b}
+h2{color:#152235}
+input,select,textarea{border:1px solid #d9d2c5;border-radius:10px;background:#fffefa}
+input:focus,select:focus,textarea:focus{outline:2px solid #c5a15b55;border-color:#b9914b}
+.primary{background:linear-gradient(135deg,#c9a968,#a77c38);color:#111b29;border-radius:10px;padding:13px 20px;box-shadow:0 7px 18px #9b783222}
+.primary:hover{filter:brightness(1.04);transform:translateY(-1px)}
+.outline{background:#fffdf8;border-color:#cbb98f;color:#273246;border-radius:10px}
+.public-sections{padding-bottom:36px}
+.section-heading{text-align:center;max-width:760px;margin:0 auto 30px}
+.section-heading h2{font-size:clamp(28px,3.5vw,42px);letter-spacing:-1px;line-height:1.15}
+.section-heading p{color:#687386;line-height:1.8}
+.feature-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.feature-card{background:linear-gradient(155deg,#fff,#faf7f0);border:1px solid #e7decd;border-radius:17px;padding:24px;box-shadow:0 12px 35px #26354a0a;transition:transform .2s ease,box-shadow .2s ease}
+.feature-card:hover{transform:translateY(-4px);box-shadow:0 18px 40px #26354a16}
+.feature-number{color:#a17a3e;font-weight:800;letter-spacing:1.5px}
+.feature-card h3{color:#172337;font-size:17px;margin:15px 0 9px}
+.feature-card p{color:#687386;line-height:1.75}
+.public-cta{background:linear-gradient(120deg,#101b2b,#1b2b40);border:1px solid #c5a15b66;border-radius:20px;padding:clamp(24px,4vw,42px);color:#fff;margin:44px 0}
+.public-cta h2{color:#fff}.public-cta p{color:#d2d5da}.public-cta .eyebrow{color:#dfc58d}
+.company-note{border-top:1px solid #e3dac8;padding-top:22px;color:#566174}
+footer{background:#0c1420;color:#c5c0b5;border-top:1px solid #c5a15b55}
+.seo-hero{background:radial-gradient(circle at 85% 15%,#39465a 0,#1b2a3e 38%,#0c1420 100%);border:1px solid #c5a15b77;box-shadow:0 25px 65px #101b2b20}
+.seo-hero h1{color:#fff;max-width:900px}.seo-hero p{color:#e1e3e6;line-height:1.8}
+.seo-hero .eyebrow{color:#e1c78f}
+.seo-hero .primary{background:linear-gradient(135deg,#e1c78f,#b58a46);color:#111b29}
+.seo-columns article{border:1px solid #e5dccb;border-radius:16px;box-shadow:0 12px 32px #1b2a3e0a;background:#fffefa;padding:23px}
+.seo-columns h3{color:#19283b}.seo-columns p,.seo-detail p{color:#657184;line-height:1.8}
+.seo-detail a{color:#906b32;font-weight:700}
+#appView .welcome h1{color:#152235}
+#appView .sidebar,#appView .panel{border-radius:16px}
+#appView .nav button.active{background:#14243a;border-color:#b9914b}
+#appView .stat{border-color:#e5dccb;border-radius:14px}
+#appView .stat b{color:#9a773a}
+#appView th{background:#f4efe5;color:#5d5038}
+@media(max-width:900px){.feature-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:680px){.top{height:72px}.auth-layout{min-height:unset}.intro h1{font-size:42px}.feature-grid{grid-template-columns:1fr}.feature-card{padding:20px}.public-cta{border-radius:16px}}
+@media(prefers-reduced-motion:reduce){.feature-card,.primary{transition:none}}
