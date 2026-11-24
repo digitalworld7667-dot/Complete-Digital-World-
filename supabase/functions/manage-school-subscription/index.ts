@@ -14,6 +14,7 @@ Deno.serve(async (req) => {
   const { data: actor, error: actorError } = await admin.from('profiles').select('id,role,school_id,account_status').eq('id', caller.id).single();
   if (actorError || !actor || !['super_admin','school_admin'].includes(actor.role) || actor.account_status !== 'active') return reply({ error: 'Active administrator access required.' }, 403);
   let body: any; try { body = await req.json(); } catch { return reply({ error: 'Invalid JSON.' }, 400); }
+  const action = String(body.action || '');
   if (action === 'select_plan') {
     if (actor.role !== 'school_admin') return reply({ error: 'Only School Admin can select its school plan.' }, 403);
     const plan = String(body.plan || ''), schoolId = String(body.school_id || '');
