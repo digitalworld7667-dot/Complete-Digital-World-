@@ -33,11 +33,19 @@ Deno.serve(async (req) => {
   const captcha = await verifyCaptcha(body.captchaToken);
   if (!captcha.ok) return reply({ error: captcha.reason }, 403);
   if (String(body.website || '').trim()) return reply({ success: true });
+  const institutionType = String(body.institution_type || 'school');
+  if (!['school','college','coaching'].includes(institutionType)) return reply({ error: 'Choose School, College or Coaching Centre.' }, 400);
   const school_name = clean(body.school_name, 180), contact_person = clean(body.contact_person, 120);
   const contact_email = String(body.contact_email || '').trim().toLowerCase(), phone = clean(body.phone, 40);
-  if (!school_name || !contact_person || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact_email) || contact_email.length > 320 || !phone) return reply({ error: 'School name, contact person, valid email and phone are required.' }, 400);
+  if (!school_name || !contact_person || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact_email) || contact_email.length > 320 || !phone) return reply({ error: 'Institution name, contact person, valid email and phone are required.' }, 400);
   const classes = Array.isArray(body.classes_offered) ? [...new Set(body.classes_offered.map((x: unknown) => String(x).trim()).filter((x: string) => /^(Nursery|LKG|UKG|Class ([1-9]|1[0-2]))$/.test(x)))] : [];
-  if (!classes.length) return reply({ error: 'Select at least one class offered by the school.' }, 400);
+  if (institutionType === 'school' && !classes.length) return reply({ error: 'Select at least one class offered by the school.' }, 400);
+  const allowedBoards = new Set(['CBSE','ICSE','ISC','BSEB','UP Board','WBBSE','Other State Board','Competitive Exams','Other']);
+  const boards = Array.isArray(body.boards_supported) ? [...new Set(body.boards_supported.map((x: unknown)=>String(x).trim()).filter((x:string)=>allowedBoards.has(x)))].slice(0,20) : [];
+  const programs = Array.isArray(body.programs_offered) ? [...new Set(body.programs_offered.map((x: unknown)=>String(x).trim()).filter((x:string)=>x.length>0&&x.length<=80))].slice(0,30) : [];
+  if (institutionType === 'coaching' && !boards.length && !programs.length) return reply({ error: 'Select at least one board or course taught by the coaching centre.' }, 400);
+  const locationCity = clean(body.city,100), locationState = clean(body.state,100);
+  if (!locationCity || !locationState) return reply({ error: 'City and State are required.' }, 400);
   const languageSet = new Set(['English','Hindi','Urdu','Bengali','Maithili','Punjabi','Odia','Assamese','Marathi','Gujarati','Tamil','Telugu','Kannada','Malayalam','Nepali','Sanskrit']);
   const supported_languages = Array.isArray(body.supported_languages) ? [...new Set(body.supported_languages.map((x: unknown) => String(x).trim()).filter((x: string) => languageSet.has(x)))].slice(0,16) : [];
   const optionalCount = (v: unknown) => v === undefined || v === null || v === '' ? null : Number(v);
@@ -53,9 +61,9 @@ Deno.serve(async (req) => {
   if (limitError) return reply({ error: 'Submission protection is temporarily unavailable. Please try again later.' }, 503);
   if (allowed !== true) return reply({ error: 'Please wait 10 minutes before submitting another school request from this network.' }, 429, { 'Retry-After': '600' });
   const { data, error } = await admin.from('school_requests').insert({
-    school_name, school_code: clean(body.school_code, 40), school_type: clean(body.school_type, 60),
+    school_name, institution_type: institutionType, boards_supported: boards, programs_offered: programs, school_code: clean(body.school_code, 40), school_type: clean(body.school_type, 60),
     contact_person, contact_email, phone, alternate_phone: clean(body.alternate_phone, 40), website: validUrl(body.website_url),
-    city: clean(body.city, 100), state: clean(body.state, 100), district: clean(body.district, 100), pincode: clean(body.pincode, 6),
+    city: locationCity, state: locationState, district: clean(body.district, 100), pincode: clean(body.pincode, 6),
     address: clean(body.address, 500), board: clean(body.board, 100), affiliation_number: clean(body.affiliation_number, 100),
     classes_offered: classes, instruction_medium: clean(body.instruction_medium, 60), supported_languages,
     academic_session: clean(body.academic_session, 30), estimated_students: students, estimated_teachers: teachers,
