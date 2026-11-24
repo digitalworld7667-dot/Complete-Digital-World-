@@ -662,3 +662,19 @@
     padding: 9px 8px;
   }
 }
+
+
+/* Public SEO landing pages */
+.seo-content{margin:42px 0}
+.seo-hero{padding:clamp(28px,6vw,72px);background:linear-gradient(135deg,#102b46,#1769aa);color:#fff;border-radius:18px;margin:22px 0 40px}
+.seo-hero .eyebrow{color:#c7e5ff}
+.seo-hero h1{font-size:clamp(34px,5vw,56px);line-height:1.12;max-width:850px;margin:16px 0}
+.seo-hero p{font-size:18px;max-width:820px;color:#e4eff8;margin-bottom:26px}
+.seo-hero .primary{display:inline-block;text-decoration:none;background:#fff;color:#102b46}
+.seo-columns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.seo-columns article{background:#fff;border:1px solid var(--line);border-radius:13px;padding:20px}
+.seo-columns h3{color:var(--navy);margin:0 0 8px}
+.seo-columns p,.seo-detail p{color:var(--muted);margin:0}
+.seo-detail p{margin:12px 0;max-width:900px}
+.seo-page{min-height:70vh}
+@media(max-width:760px){.seo-columns{grid-template-columns:1fr}.seo-hero{padding:26px 20px}.seo-hero p{font-size:16px}}
