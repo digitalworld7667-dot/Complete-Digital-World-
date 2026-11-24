@@ -895,3 +895,83 @@ html{background:#101a2a;scroll-behavior:smooth}body{background:#101a2a!important
 #appView .primary{background:linear-gradient(135deg,#e3ca91,#b58a46);color:#101a2a}
 @media(max-width:900px){#appView .dashboard-shell{grid-template-columns:1fr}#appView .sidebar{position:static;max-height:none}#appView .nav{flex-direction:row;flex-wrap:wrap}#appView .premium-dashboard-grid{grid-template-columns:1fr}}
 @media(max-width:600px){#appView{padding:14px 12px 40px}#appView .welcome{padding:16px;align-items:flex-start}#appView .welcome h1{font-size:23px}#appView .panel{padding:13px}#appView .premium-dashboard-heading{align-items:flex-start;flex-direction:column}#appView .premium-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}#appView .premium-stat-card{padding:13px;min-height:115px}#appView .premium-chart-row{grid-template-columns:82px minmax(30px,1fr) 25px;gap:7px}#appView .premium-dashboard-footer{gap:10px;flex-wrap:wrap}}
+
+/* Warm champagne-gold finish for every dashboard box and panel */
+#appView .panel,
+#appView .sidebar,
+#appView .welcome,
+#appView .card,
+#appView .stat,
+#appView .premium-stat-card,
+#appView .premium-widget,
+#appView .premium-secure-note,
+#appView .table-wrap,
+#appView .form-card,
+#appView .section-card,
+#appView .content-card,
+#appView .modal-content,
+#appView .dashboard-card{
+  border-color:rgba(205,169,99,.72)!important;
+  box-shadow:0 0 0 1px rgba(205,169,99,.08),0 12px 30px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,226,165,.07)!important;
+}
+#appView .premium-stat-card,
+#appView .stat,
+#appView .card,
+#appView .dashboard-card,
+#appView .form-card,
+#appView .section-card,
+#appView .content-card{
+  background:linear-gradient(145deg,#202a39 0%,#172235 58%,#1b2636 100%)!important;
+}
+#appView .premium-widget,
+#appView .panel{
+  background:linear-gradient(145deg,#172438 0%,#111d30 100%)!important;
+}
+#appView .sidebar{
+  background:linear-gradient(180deg,#18263a 0%,#111c2d 100%)!important;
+}
+#appView .premium-stat-card:hover,
+#appView .card:hover,
+#appView .stat:hover,
+#appView .dashboard-card:hover{
+  border-color:#e4c27d!important;
+  box-shadow:0 0 0 1px rgba(228,194,125,.22),0 12px 34px rgba(0,0,0,.3),0 0 18px rgba(197,161,91,.12)!important;
+}
+#appView .premium-stat-icon{
+  background:linear-gradient(145deg,#e5c77f,#a77c39)!important;
+  color:#172033!important;
+  box-shadow:0 2px 12px rgba(197,161,91,.2);
+}
+#appView .premium-widget-tag,
+#appView .nav button.active{
+  border-color:#c6a15e!important;
+}
+#appView .premium-summary-list>div,
+#appView .premium-dashboard-footer,
+#appView .premium-summary-list{
+  border-color:rgba(205,169,99,.34)!important;
+}
+#appView table,
+#appView table th,
+#appView table td{
+  border-color:rgba(205,169,99,.42)!important;
+}
+#appView table th{
+  background:linear-gradient(100deg,#3a3021,#2b2b2a)!important;
+  color:#f0d69e!important;
+}
+#appView table td{background:#172438!important}
+#appView input:focus,
+#appView select:focus,
+#appView textarea:focus{
+  border-color:#dfbd76!important;
+  box-shadow:0 0 0 3px rgba(197,161,91,.16)!important;
+  outline:none;
+}
+#appView .outline{border-color:#c9a45f!important}
+#appView .primary{
+  background:linear-gradient(135deg,#f0d99f 0%,#c49a50 52%,#9e7437 100%)!important;
+  border-color:#f0d99f!important;
+  color:#161d28!important;
+  box-shadow:0 5px 18px rgba(197,161,91,.18)!important;
+}
