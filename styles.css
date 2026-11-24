@@ -1010,3 +1010,5 @@ html{background:#101a2a;scroll-behavior:smooth}body{background:#101a2a!important
 .registration-form-heading{display:grid;gap:10px}.registration-form-heading h2{margin:6px 0 0}.institution-form [data-institution-section]{display:contents}
 .institution-form [data-institution-section][hidden]{display:none!important}
 @media(max-width:700px){.registration-chooser{margin:16px 10px;padding:18px}.registration-type-grid{grid-template-columns:1fr}.registration-type-card{min-height:150px}.site-nav .nav-register{padding:8px 12px}}
+
+.institution-overview-meta{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.institution-overview-meta span{display:inline-flex;align-items:center;padding:5px 10px;border:1px solid rgba(205,173,112,.4);border-radius:20px;background:rgba(205,173,112,.1);font-size:11px;font-weight:700;color:inherit}
