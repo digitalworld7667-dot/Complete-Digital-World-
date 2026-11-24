@@ -33,6 +33,7 @@ Deno.serve(async (req) => {
   const captcha = await verifyCaptcha(body.captchaToken);
   if (!captcha.ok) return reply({ error: captcha.reason }, 403);
   if (String(body.website || '').trim()) return reply({ success: true });
+  const selectedPlan = ['basic','advanced','premium'].includes(String(body.selected_plan)) ? String(body.selected_plan) : 'basic';
   const school_name = clean(body.school_name, 180), contact_person = clean(body.contact_person, 120);
   const contact_email = String(body.contact_email || '').trim().toLowerCase(), phone = clean(body.phone, 40);
   if (!school_name || !contact_person || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact_email) || contact_email.length > 320 || !phone) return reply({ error: 'School name, contact person, valid email and phone are required.' }, 400);
@@ -59,7 +60,7 @@ Deno.serve(async (req) => {
     address: clean(body.address, 500), board: clean(body.board, 100), affiliation_number: clean(body.affiliation_number, 100),
     classes_offered: classes, instruction_medium: clean(body.instruction_medium, 60), supported_languages,
     academic_session: clean(body.academic_session, 30), estimated_students: students, estimated_teachers: teachers,
-    branches_count: branches, logo_url: validUrl(body.logo_url), document_urls: documents,
+    branches_count: branches, selected_plan: selectedPlan, logo_url: validUrl(body.logo_url), document_urls: documents,
     message: clean(body.message, 2000), status: 'pending'
   }).select('id').single();
   if (error) return reply({ error: 'Could not submit request: ' + error.message }, 400);
