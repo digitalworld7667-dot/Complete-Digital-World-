@@ -997,3 +997,16 @@ html{background:#101a2a;scroll-behavior:smooth}body{background:#101a2a!important
 #appView .super-admin-ad-link{display:flex;flex-direction:column;gap:7px;color:#f2dfb4;text-decoration:none}
 #appView .super-admin-ad-link img{display:block;width:100%;max-height:190px;min-height:130px;object-fit:contain;border-radius:8px}
 #appView .super-admin-ad-link span{font-size:12px;font-weight:700}
+
+/* Institution registration chooser and responsive cards */
+.site-nav .nav-register{border:1px solid rgba(220,190,130,.65);background:transparent;color:#f0d79d;border-radius:30px;padding:9px 18px;font-weight:750;cursor:pointer}
+.site-nav .nav-register:hover{background:#d7b977;color:#111c2d}
+.registration-chooser{max-width:980px;margin:24px auto;padding:26px;border:1px solid #c6a15e;border-radius:18px;background:linear-gradient(145deg,#172438,#101a2a);color:#fff;box-shadow:0 16px 40px #07101e30}
+.registration-chooser-head{text-align:center;margin-bottom:22px}.registration-chooser-head h2{margin:8px 0;color:#fff}.registration-chooser-head p{color:#bac5d2}
+.registration-type-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.registration-type-card{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:10px;min-height:210px;padding:22px;border:1px solid #b99556;border-radius:14px;background:#1c2b40;color:#fff;cursor:pointer;transition:.2s}
+.registration-type-card:hover{transform:translateY(-3px);border-color:#f0d79d;box-shadow:0 12px 28px #0004}
+.registration-type-icon{font-size:34px}.registration-type-card strong{font-size:20px}.registration-type-card small{color:#c0cad6;line-height:1.5}.registration-type-card b{color:#e7c987;margin-top:auto}
+.registration-form-heading{display:grid;gap:10px}.registration-form-heading h2{margin:6px 0 0}.institution-form [data-institution-section]{display:contents}
+.institution-form [data-institution-section][hidden]{display:none!important}
+@media(max-width:700px){.registration-chooser{margin:16px 10px;padding:18px}.registration-type-grid{grid-template-columns:1fr}.registration-type-card{min-height:150px}.site-nav .nav-register{padding:8px 12px}}
