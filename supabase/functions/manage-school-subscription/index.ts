@@ -5,7 +5,7 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   if (req.method !== 'POST') return reply({ error: 'Method not allowed' }, 405);
   const url = Deno.env.get('SUPABASE_URL')!, anon = Deno.env.get('SUPABASE_ANON_KEY')!, service = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-  const jwt = (req.headers.get('Authorization') || '').replace(/^Bearer\\s+/i, '');
+  const jwt = (req.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '');
   if (!url || !anon || !service || !jwt) return reply({ error: 'Valid session and server configuration required.' }, 401);
   const callerClient = createClient(url, anon, { global: { headers: { Authorization: `Bearer ${jwt}` } }, auth: { persistSession: false } });
   const { data: { user: caller }, error: authError } = await callerClient.auth.getUser();
