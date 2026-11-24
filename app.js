@@ -200,12 +200,46 @@
  async function renderAdvertisementManagement(panel){
   const {data:ads,error}=await client.from('super_admin_dashboard_ads').select('*').order('created_at',{ascending:false}).limit(100);
   if(error)throw error;
-  panel.innerHTML='<div class="panel-head"><div><h2>Advertisement Management</h2><p class="muted">Only Super Admin can manage ads. Advertisements appear only in the reserved Super Admin dashboard space.</p></div></div>'+
-  '<form id="dashboardAdForm" class="form-grid ad-management-form"><label>Ad title<input name="title" maxlength="120" required></label><label>Advertiser / company<input name="advertiser_name" maxlength="120" required></label><label class="wide">Banner image URL<input name="image_url" type="url" placeholder="https://example.com/banner.jpg" required></label><label class="wide">Destination URL<input name="target_url" type="url" placeholder="https://advertiser.example" required></label><label>Starts at (optional)<input name="starts_at" type="datetime-local"></label><label>Ends at (optional)<input name="ends_at" type="datetime-local"></label><div class="wide"><button class="primary" type="submit">Save advertisement</button></div></form>'+
-  '<h3>Saved advertisements</h3><div class="ad-admin-list">'+(ads||[]).map(ad=>'<article class="ad-admin-card"><img src="'+esc(ad.image_url)+'" alt="Advertisement banner"><div class="ad-admin-info"><b>'+esc(ad.title)+'</b><span>'+esc(ad.advertiser_name)+'</span><small>'+((ad.is_active)?'Active':'Paused')+' · '+(ad.ends_at?'Ends '+new Date(ad.ends_at).toLocaleString():'No end date')+'</small><a href="'+esc(ad.target_url)+'" target="_blank" rel="noopener">Open destination</a></div><div class="ad-admin-actions"><button class="outline small" data-ad-toggle="'+esc(ad.id)+'" data-active="'+String(ad.is_active)+'">'+(ad.is_active?'Pause':'Activate')+'</button> <button class="outline small" data-ad-delete="'+esc(ad.id)+'">Delete</button></div></article>').join('')||'<p class="muted">No advertisements added yet.</p>')+'</div>'+
-  '<div class="premium-ad-slot"><span>ADVERTISEMENT PREVIEW · SUPER ADMIN ONLY</span><div class="premium-ad-empty">Your active sponsored banner will appear in this reserved space.</div></div>';
+  const now=Date.now();
+  const adStatus=ad=>!ad.is_active?'Paused':(ad.ends_at&&new Date(ad.ends_at).getTime()<=now?'Expired':(ad.starts_at&&new Date(ad.starts_at).getTime()>now?'Scheduled':'Active'));
+  panel.innerHTML='<div class="panel-head"><div><h2>Advertisement Management</h2><p class="muted">Only Super Admin can manage ads. Banners appear only in the reserved Super Admin dashboard space; School Admin never sees ads.</p></div></div>'+
+  '<form id="dashboardAdForm" class="form-grid ad-management-form"><label>Ad title<input name="title" maxlength="120" required></label><label>Advertiser / company<input name="advertiser_name" maxlength="120" required></label><label class="wide">Banner image<input name="banner_file" type="file" accept="image/png,image/jpeg,image/webp"><small class="muted">PNG, JPG or WEBP · maximum 5 MB. Or paste an existing public image URL below.</small></label><label class="wide">Banner image URL (optional if uploading)<input name="image_url" type="url" placeholder="https://example.com/banner.jpg"></label><label class="wide">Destination URL<input name="target_url" type="url" placeholder="https://advertiser.example" required></label><label>Starts at (optional)<input name="starts_at" type="datetime-local"></label><label>Ends at (optional)<input name="ends_at" type="datetime-local"></label><label>Ad price (₹)<input name="payment_amount" type="number" min="0" step="0.01" placeholder="e.g. 2000"></label><label>Billing period<select name="billing_period"><option value="">Select period</option><option value="1 month">1 month</option><option value="3 months">3 months</option><option value="6 months">6 months</option><option value="12 months">12 months</option><option value="custom">Custom</option></select></label><label>Payment status<select name="payment_status"><option value="pending">Pending</option><option value="paid">Paid</option></select></label><label>Payment method<input name="payment_method" maxlength="60" placeholder="UPI / Bank transfer / Cash"></label><label class="wide">Payment reference (optional)<input name="payment_reference" maxlength="160" placeholder="UTR / transaction reference"></label><div class="wide"><button class="primary" type="submit">Save advertisement</button></div></form>'+
+  '<h3>Saved advertisements & payments</h3><div class="ad-admin-list">'+(ads||[]).map(ad=>'<article class="ad-admin-card"><img src="'+esc(ad.image_url)+'" alt="Advertisement banner"><div class="ad-admin-info"><b>'+esc(ad.title)+'</b><span>'+esc(ad.advertiser_name)+'</span><small>'+esc(adStatus(ad))+' · Payment: '+esc(ad.payment_status||'pending')+(ad.payment_amount!==null&&ad.payment_amount!==undefined?' · ₹'+Number(ad.payment_amount).toFixed(2):'')+(ad.billing_period?' · '+esc(ad.billing_period):'')+'</small><small>'+(ad.ends_at?'Ends '+new Date(ad.ends_at).toLocaleString():'No end date')+(ad.payment_reference?' · Ref: '+esc(ad.payment_reference):'')+'</small><a href="'+esc(ad.target_url)+'" target="_blank" rel="noopener">Open destination</a></div><div class="ad-admin-actions"><button class="outline small" data-ad-payment="'+esc(ad.id)+'" data-status="'+esc(ad.payment_status||'pending')+'">'+((ad.payment_status||'pending')==='paid'?'Mark pending':'Mark paid')+'</button><button class="outline small" data-ad-toggle="'+esc(ad.id)+'" data-active="'+String(ad.is_active)+'">'+(ad.is_active?'Pause':'Activate')+'</button><button class="outline small" data-ad-delete="'+esc(ad.id)+'">Delete</button></div></article>').join('')||'<p class="muted">No advertisements added yet.</p>')+'</div>'+
+  '<div class="premium-ad-slot"><span>ADVERTISEMENT PREVIEW · SUPER ADMIN ONLY</span><div class="premium-ad-empty">Active scheduled banners appear in the reserved bottom space of Super Admin Overview only.</div></div>';
   const form=panel.querySelector('#dashboardAdForm');
-  form.onsubmit=async event=>{event.preventDefault();const data=Object.fromEntries(new FormData(form).entries());const payload={title:data.title.trim(),advertiser_name:data.advertiser_name.trim(),image_url:data.image_url.trim(),target_url:data.target_url.trim(),starts_at:data.starts_at?new Date(data.starts_at).toISOString():null,ends_at:data.ends_at?new Date(data.ends_at).toISOString():null,created_by:user.id};const {error}=await client.from('super_admin_dashboard_ads').insert(payload);if(error){appMessage(error.message,'error');return}appMessage('Advertisement saved.','success');renderPanel()};
+  form.onsubmit=async event=>{
+   event.preventDefault();
+   const submit=form.querySelector('[type="submit"]');submit.disabled=true;
+   try{
+    const data=Object.fromEntries(new FormData(form).entries());
+    let imageUrl=(data.image_url||'').trim();
+    const fileInput=form.querySelector('[name="banner_file"]');
+    const banner=fileInput.files?.[0];
+    if(banner){
+     if(!['image/png','image/jpeg','image/webp'].includes(banner.type))throw new Error('Banner must be PNG, JPG or WEBP.');
+     if(banner.size>5*1024*1024)throw new Error('Banner image must be 5 MB or smaller.');
+     const safeName=banner.name.toLowerCase().replace(/[^a-z0-9.-]+/g,'-').slice(-80);
+     const path=user.id+'/'+Date.now()+'-'+safeName;
+     const {error:uploadError}=await client.storage.from('advertisement-banners').upload(path,banner,{contentType:banner.type,upsert:false});
+     if(uploadError)throw uploadError;
+     imageUrl=client.storage.from('advertisement-banners').getPublicUrl(path).data.publicUrl;
+    }
+    if(!imageUrl)throw new Error('Please upload a banner image or enter an image URL.');
+    const startsAt=data.starts_at?new Date(data.starts_at).toISOString():null;
+    const endsAt=data.ends_at?new Date(data.ends_at).toISOString():null;
+    if(startsAt&&endsAt&&new Date(endsAt)<=new Date(startsAt))throw new Error('End date must be later than start date.');
+    const paid=data.payment_status==='paid';
+    const payload={title:data.title.trim(),advertiser_name:data.advertiser_name.trim(),image_url:imageUrl,target_url:data.target_url.trim(),starts_at:startsAt,ends_at:endsAt,created_by:user.id,payment_amount:data.payment_amount===''?null:Number(data.payment_amount),billing_period:data.billing_period||null,payment_status:data.payment_status||'pending',payment_method:data.payment_method.trim()||null,payment_reference:data.payment_reference.trim()||null,paid_at:paid?new Date().toISOString():null};
+    const {error:insertError}=await client.from('super_admin_dashboard_ads').insert(payload);if(insertError)throw insertError;
+    appMessage('Advertisement saved successfully.','success');renderPanel();
+   }catch(err){appMessage(err.message||String(err),'error');submit.disabled=false;}
+  };
+  panel.querySelectorAll('[data-ad-payment]').forEach(btn=>btn.onclick=async()=>{
+   const next=btn.dataset.status==='paid'?'pending':'paid';
+   const update={payment_status:next,paid_at:next==='paid'?new Date().toISOString():null,updated_at:new Date().toISOString()};
+   const {error}=await client.from('super_admin_dashboard_ads').update(update).eq('id',btn.dataset.adPayment);
+   if(error)appMessage(error.message,'error');else{appMessage('Payment status updated: '+next,'success');renderPanel();}
+  });
   panel.querySelectorAll('[data-ad-toggle]').forEach(btn=>btn.onclick=async()=>{const {error}=await client.from('super_admin_dashboard_ads').update({is_active:btn.dataset.active!=='true',updated_at:new Date().toISOString()}).eq('id',btn.dataset.adToggle);if(error)appMessage(error.message,'error');else renderPanel()});
   panel.querySelectorAll('[data-ad-delete]').forEach(btn=>btn.onclick=async()=>{if(!confirm('Delete this advertisement?'))return;const {error}=await client.from('super_admin_dashboard_ads').delete().eq('id',btn.dataset.adDelete);if(error)appMessage(error.message,'error');else renderPanel()});
  }
