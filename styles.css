@@ -975,25 +975,3 @@ html{background:#101a2a;scroll-behavior:smooth}body{background:#101a2a!important
   color:#161d28!important;
   box-shadow:0 5px 18px rgba(197,161,91,.18)!important;
 }
-
-/* Remove the extra bottom padding that leaves an empty strip under the admin workspace */
-@media (min-width: 761px) {
-  #appView:not([hidden]) {
-    padding: 0 0 0 !important;
-    margin: 0 !important;
-    min-height: 0 !important;
-  }
-  #appView:not([hidden]) .dashboard-shell {
-    margin-bottom: 0 !important;
-  }
-}
-@media (max-width: 760px) {
-  #appView:not([hidden]) {
-    padding: 0 0 0 !important;
-    margin: 0 !important;
-    min-height: 0 !important;
-  }
-  #appView:not([hidden]) .dashboard-shell {
-    margin-bottom: 0 !important;
-  }
-}
