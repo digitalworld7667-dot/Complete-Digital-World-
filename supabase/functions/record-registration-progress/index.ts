@@ -11,7 +11,7 @@ Deno.serve(async req=>{if(req.method==='OPTIONS')return new Response('ok',{heade
  const institution=['school','college','coaching'].includes(b.institution_type)?b.institution_type:'unknown';
  const consent=b.consent===true,ipHash=await hashIp(req,key),admin=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}});
  const {data:prior}=await admin.from('registration_leads').select('last_seen_at').eq('session_id',b.session_id).maybeSingle();
- if(prior?.last_seen_at&&Date.now()-new Date(prior.last_seen_at).getTime()<1800)return reply({success:true,throttled:true});
+ if(status==='in_progress'&&prior?.last_seen_at&&Date.now()-new Date(prior.last_seen_at).getTime()<1800)return reply({success:true,throttled:true});
  const row={session_id:b.session_id,institution_type:institution,current_step:clean(b.current_step,100)||'registration_opened',status,
  visitor_name:consent?clean(b.visitor_name,120):null,contact_email:consent?clean(b.contact_email,254)?.toLowerCase()||null:null,phone:consent?clean(b.phone,40):null,
  last_error:status==='issue'?clean(b.last_error,300):null,ip_hash:ipHash,last_seen_at:new Date().toISOString(),updated_at:new Date().toISOString()};
