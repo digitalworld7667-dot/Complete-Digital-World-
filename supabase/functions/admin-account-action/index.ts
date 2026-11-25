@@ -52,6 +52,68 @@ Deno.serve(async (req) => {
     await admin.from('activity_logs').insert({ school_id: targetProfile.school_id, actor_profile_id: caller.id, action: 'TEMPORARY_PASSWORD_ISSUED', entity_table: 'profiles', entity_id: targetId });
     return reply({ success: true, login_id: targetProfile.login_id, temporary_password: tempPassword, message: 'Temporary password issued. Share it privately; user must change it at next login.' });
   }
+
+  if (action === 'unlock_login_lockout') {
+    if (actor.role !== 'super_admin') return reply({ error: 'Only Super Admin can unlock a login-locked account.' }, 403);
+    const targetId = String(body.user_id || '');
+    if (!targetId) return reply({ error: 'user_id is required.' }, 400);
+    const { data: target, error: targetError } = await admin.from('profiles')
+      .select('id,role,school_id,login_id,full_name').eq('id', targetId).single();
+    if (targetError || !target) return reply({ error: 'Account not found.' }, 404);
+    const { data: targetAuth, error: targetAuthError } = await admin.auth.admin.getUserById(targetId);
+    const targetEmail = targetAuth?.user?.email?.trim().toLowerCase();
+    if (targetAuthError || !targetEmail) return reply({ error: 'Could not resolve the account email for secure unlock.' }, 400);
+    const bytes = new TextEncoder().encode(service + ':' + targetEmail);
+    const digest = await crypto.subtle.digest('SHA-256', bytes);
+    const identityHash = Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('');
+    const { error: clearError } = await admin.rpc('clear_login_failures', { p_identity_hash: identityHash });
+    if (clearError) return reply({ error: 'Could not clear login lockout: ' + clearError.message }, 500);
+    await admin.from('activity_logs').insert({
+      school_id: target.school_id, actor_profile_id: caller.id,
+      action: 'LOGIN_LOCKOUT_CLEARED', entity_table: 'profiles', entity_id: targetId,
+      new_data: { role: target.role, login_id: target.login_id || null, method: 'super_admin_support_unlock' }
+    });
+    return reply({ success: true, user_id: targetId, login_id: target.login_id || null, message: 'Login lockout cleared. The user can try signing in again.' });
+  }
+
+  if (action === 'super_admin_reset_password') {
+    if (actor.role !== 'super_admin') return reply({ error: 'Only Super Admin can reset a password through support.' }, 403);
+    const targetId = String(body.user_id || '');
+    if (!targetId) return reply({ error: 'user_id is required.' }, 400);
+    if (targetId === caller.id) return reply({ error: 'Use the normal account recovery process for your own account.' }, 403);
+    const { data: target, error: targetError } = await admin.from('profiles')
+      .select('id,role,school_id,login_id,must_change_password').eq('id', targetId).single();
+    if (targetError || !target) return reply({ error: 'Account not found.' }, 404);
+    if (target.role === 'super_admin') return reply({ error: 'A Super Admin cannot reset another Super Admin password through this support action.' }, 403);
+    const { data: targetAuth, error: targetAuthError } = await admin.auth.admin.getUserById(targetId);
+    const targetEmail = targetAuth?.user?.email?.trim().toLowerCase();
+    if (targetAuthError || !targetEmail) return reply({ error: 'Could not resolve the account email for password reset.' }, 400);
+    const bytes = new Uint8Array(24); crypto.getRandomValues(bytes);
+    const tempPassword = Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('') + 'Aa7!';
+    const identityBytes = new TextEncoder().encode(service + ':' + targetEmail);
+    const digest = await crypto.subtle.digest('SHA-256', identityBytes);
+    const identityHash = Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('');
+    const { error: clearError } = await admin.rpc('clear_login_failures', { p_identity_hash: identityHash });
+    if (clearError) return reply({ error: 'Could not clear the login lockout. Password was not changed.' }, 500);
+    const { error: flagError } = await admin.from('profiles').update({ must_change_password: true }).eq('id', targetId);
+    if (flagError) return reply({ error: 'Could not require a password change.' }, 500);
+    const { error: passwordError } = await admin.auth.admin.updateUserById(targetId, { password: tempPassword });
+    if (passwordError) {
+      await admin.from('profiles').update({ must_change_password: target.must_change_password === true }).eq('id', targetId);
+      return reply({ error: 'Password reset failed: ' + passwordError.message }, 400);
+    }
+    await admin.from('activity_logs').insert({
+      school_id: target.school_id, actor_profile_id: caller.id,
+      action: 'SUPPORT_PASSWORD_RESET_AND_UNLOCK', entity_table: 'profiles', entity_id: targetId,
+      new_data: { role: target.role, login_id: target.login_id || null, must_change_password: true }
+    });
+    return reply({
+      success: true, user_id: targetId, login_id: target.login_id || null,
+      temporary_password: tempPassword, lockout_cleared: true,
+      message: 'Password reset and login lockout cleared. User must change this temporary password after signing in.'
+    });
+  }
+
   if (action === 'delete_account') return reply({ error: 'Permanent account deletion is disabled to protect linked academic and financial records. Use set_account_status with status=inactive to block access while preserving records.' }, 409);
   if (action === 'review_school_request') {
     if (actor.role !== 'super_admin') return reply({ error: 'Only Super Admin can review school requests.' }, 403);
