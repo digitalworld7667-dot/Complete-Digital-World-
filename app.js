@@ -334,6 +334,18 @@
   <h3>Salary records</h3>${list.length?`<div class="table-wrap"><table><thead><tr><th>Staff</th><th>Month</th><th>Basic</th><th>Allowances</th><th>Deductions</th><th>Net salary</th><th>Status</th><th>Payment details</th>${ownOnly?'':'<th>Action</th>'}</tr></thead><tbody>${list.map(x=>`<tr><td><b>${esc(x.staff_name)}</b><br><small>${esc(x.staff_role||'Staff')}</small></td><td>${esc(String(x.salary_month).slice(0,7))}</td><td>${money(x.basic_salary)}</td><td>${money(x.allowances)}</td><td>${money(x.deductions)}</td><td><b>${money(x.net_salary)}</b></td><td>${esc(x.status)}</td><td>${esc(x.payment_date?new Date(x.payment_date).toLocaleDateString('en-IN'):'—')}<br><small>${esc(x.transaction_reference||'')}</small></td>${ownOnly?'':`<td>${x.status!=='paid'&&x.status!=='cancelled'?'<button class="primary small" data-salary-paid="'+esc(x.id)+'">Mark paid</button>':''}</td>`}</tr>`).join('')}</tbody></table></div>`:'<div class="empty">No salary records found yet.</div>'}
   <p class="muted small">Manual mode: school transfers salary directly from its own bank/UPI account. ERP only records the payment; it does not hold or transfer salary funds.</p>`;
   const form=$('#salaryRecordForm');
+  if(form){
+   const teacherSelect=form.elements.namedItem('teacher_id');
+   const staffName=form.elements.namedItem('staff_name');
+   const staffRole=form.elements.namedItem('staff_role');
+   if(teacherSelect) teacherSelect.addEventListener('change',()=>{
+    const selected=(teachers||[]).find(t=>t.id===teacherSelect.value);
+    if(selected){
+     if(staffName) staffName.value=selected.teacher_name||'';
+     if(staffRole) staffRole.value=selected.subject||'Teacher';
+    }
+   });
+  }
   if(form) form.onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(form));const btn=form.querySelector('[type=submit]');btn.disabled=true;try{
    const month=d.salary_month+'-01';const basic=Number(d.basic_salary),allow=Number(d.allowances||0),ded=Number(d.deductions||0);
    if([basic,allow,ded].some(v=>!Number.isFinite(v)||v<0)||ded>basic+allow)throw new Error('Please check salary amounts and deductions.');
