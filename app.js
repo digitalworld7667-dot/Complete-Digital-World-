@@ -470,6 +470,7 @@ async function renderDriverGps(panel){
   if(active==='My Salary'&&profile.role==='teacher'){await renderSalaryManagement(panel,true);return}
   if(active==='Registration Leads'&&profile.role==='super_admin'){await renderRegistrationLeads(panel);return}
   if(active==='Notifications'){await renderNotifications(panel);return}
+  if(active==='Security Monitoring'&&profile.role==='super_admin'){await renderSecurityMonitoring(panel);return}
   if(active==='Platform Payment Settings'&&profile.role==='super_admin'){
     const {data:settings,error}=await client.from('platform_payment_settings').select('*').eq('singleton_id',1).maybeSingle();if(error)throw error;
     const row=settings||{enabled:false,upi_vpa:'',payee_name:'',qr_image_data:''};
