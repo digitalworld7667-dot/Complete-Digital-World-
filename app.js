@@ -752,7 +752,7 @@ async function renderAccounts(panel){
  $('#schoolRequestToggle').onclick=openRegistrationChooser;
  $('#backToInstitutionChoices').onclick=()=>{requestForm.hidden=true;chooser.hidden=false;resetCaptcha('school')};
  document.querySelectorAll('[data-institution-choice]').forEach(btn=>btn.onclick=()=>{
-  const type=btn.dataset.institutionChoice;requestForm.reset();trackRegistration('in_progress','institution_type_selected');requestForm.querySelector('[name="institution_type"]').value=type;chooser.hidden=true;requestForm.hidden=false;
+  const type=btn.dataset.institutionChoice;requestForm.reset();requestForm.querySelector('[name="institution_type"]').value=type;trackRegistration('in_progress','institution_type_selected');chooser.hidden=true;requestForm.hidden=false;
   const labels={school:['School name','School registration','Provide your school details for approval.','Submit school registration request'],college:['College name','College registration','Provide basic college and programme details.','Submit college registration request'],coaching:['Coaching centre name','Coaching registration','Quick registration: only basic contact and location details are required.','Submit coaching registration request']};
   const [name,title,desc,submit]=labels[type];$('#institutionNameLabel').firstChild.textContent=name;$('#registrationFormTitle').textContent=title;$('#registrationFormDescription').textContent=desc;$('#institutionSubmitButton').textContent=submit;
   requestForm.querySelector('[name="institution_type"]').value=type;
