@@ -381,9 +381,17 @@
   <h3>Salary records</h3>${list.length?`<div class="table-wrap"><table><thead><tr><th>Staff</th><th>Month</th><th>Basic</th><th>Allowances</th><th>Deductions</th><th>Net salary</th><th>Status</th><th>Payment details</th><th>Payslip</th>${ownOnly?'':'<th>Action</th>'}</tr></thead><tbody>${list.map(x=>`<tr><td><b>${esc(x.staff_name)}</b><br><small>${esc(x.staff_role||'Staff')}</small></td><td>${esc(String(x.salary_month).slice(0,7))}</td><td>${money(x.basic_salary)}</td><td>${money(x.allowances)}</td><td>${money(x.deductions)}</td><td><b>${money(x.net_salary)}</b></td><td>${esc(x.status)}</td><td>${esc(x.payment_date?new Date(x.payment_date).toLocaleDateString('en-IN'):'—')}<br><small>${esc(x.transaction_reference||'')}</small></td><td><button class="outline small" type="button" data-salary-slip="${esc(x.id)}">Print</button></td>${ownOnly?'':`<td>${x.status!=='paid'&&x.status!=='cancelled'?'<button class="primary small" data-salary-paid="'+esc(x.id)+'">Mark paid</button>':''}</td>`}</tr>`).join('')}</tbody></table></div>`:'<div class="empty">No salary records found yet.</div>'}
   <p class="muted small">Manual mode: school transfers salary directly from its own bank/UPI account. ERP only records the payment; it does not hold or transfer salary funds.</p>`;
   const form=$('#salaryRecordForm');
+  if(form){
+   const clearOldSalaryError=()=>{
+    const notice=$('#notice');
+    if(notice&&!notice.hidden&&notice.textContent.includes('Please check salary month and amounts.'))notice.hidden=true;
+   };
+   form.addEventListener('input',clearOldSalaryError);
+   form.addEventListener('change',clearOldSalaryError);
+  }
   if(form) form.onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(form));const btn=form.querySelector('[type=submit]');btn.disabled=true;try{
    const basic=Number(d.basic_salary),allow=Number(d.allowances||0),ded=Number(d.deductions||0);
-   if(!/^\\d{4}-\\d{2}$/.test(d.salary_month)||[basic,allow,ded].some(v=>!Number.isFinite(v)||v<0)||ded>basic+allow)throw new Error('Please check salary month and amounts. Deductions cannot exceed gross salary.');
+   if(!/^\d{4}-\d{2}$/.test(d.salary_month)||[basic,allow,ded].some(v=>!Number.isFinite(v)||v<0)||ded>basic+allow)throw new Error('Please check salary month and amounts. Deductions cannot exceed gross salary.');
    const {error}=await client.from('staff_salary_records').insert({school_id:schoolId,teacher_id:d.teacher_id||null,staff_name:d.staff_name.trim(),staff_role:d.staff_role.trim()||null,salary_month:d.salary_month+'-01',basic_salary:basic,allowances:allow,deductions:ded,payment_mode:'manual',payslip_number:d.payslip_number.trim()||null,notes:d.notes.trim()||null,created_by:user.id});
    if(error)throw error;appMessage('Salary record saved.','success');renderPanel();
   }catch(err){appMessage(err.message||String(err),'error');btn.disabled=false}};
